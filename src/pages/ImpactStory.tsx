@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { ImpactTone } from '../types';
 import { generateImpactStory } from '../services/api';
 import {
-    Heart, AlertTriangle, Shield, Globe, Copy, CheckCircle, FileText, Users, Loader2
+    Heart, AlertTriangle, Shield, Copy, CheckCircle, Loader2
 } from 'lucide-react';
 
 const tones: { value: ImpactTone; label: string; desc: string }[] = [
@@ -20,7 +20,14 @@ export default function ImpactStory() {
     const [bloodGroup, setBloodGroup] = useState('O Positive');
     const [patientContext, setPatientContext] = useState('Anonymized thalassemia patient requiring regular O Positive transfusions');
     const [tone, setTone] = useState<ImpactTone>('awareness');
-    const [generated, setGenerated] = useState<{ awarenessMessage: string; socialPost: string; coordinatorSummary: string; safetyNotice: string } | null>(null);
+    const [generated, setGenerated] = useState<{
+        awarenessMessage: string;
+        socialPost: string;
+        coordinatorSummary: string;
+        safetyNotice: string;
+        bedrock_available?: boolean;
+        fallback_used?: boolean;
+    } | null>(null);
     const [copiedField, setCopiedField] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -31,6 +38,7 @@ export default function ImpactStory() {
     const handleGenerate = async () => {
         setLoading(true);
         setError(null);
+        setGenerated(null);
         try {
             const result = await generateImpactStory({
                 donorsContacted,
@@ -142,11 +150,31 @@ export default function ImpactStory() {
 
                     <button
                         onClick={handleGenerate}
+                        disabled={loading}
                         className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[var(--brand-primary)] text-white text-sm font-medium hover:bg-[var(--brand-dark)] transition"
                     >
-                        <Heart size={16} />
-                        Generate Impact Content
+                        {loading ? (
+                            <>
+                                <Loader2 size={16} className="animate-spin" />
+                                Generating...
+                            </>
+                        ) : (
+                            <>
+                                <Heart size={16} />
+                                Generate Impact Content
+                            </>
+                        )}
                     </button>
+
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700 flex items-start gap-2">
+                            <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
+                            <div>
+                                <div className="font-semibold">Impact story generation failed</div>
+                                <div className="text-xs mt-1">{error}</div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Output */}
@@ -159,12 +187,12 @@ export default function ImpactStory() {
                                     <h2 className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Space Grotesk' }}>
                                         Awareness Message
                                     </h2>
-                                    <button onClick={() => handleCopy(generated.awareness, 'awareness')} className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                                    <button onClick={() => handleCopy(generated.awarenessMessage, 'awareness')} className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
                                         {copiedField === 'awareness' ? <><CheckCircle size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
                                     </button>
                                 </div>
                                 <div className="p-4 rounded-xl bg-blue-50 border border-blue-100 whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
-                                    {generated.awareness}
+                                    {generated.awarenessMessage}
                                 </div>
                             </div>
 
@@ -174,12 +202,12 @@ export default function ImpactStory() {
                                     <h2 className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Space Grotesk' }}>
                                         Social Post Style
                                     </h2>
-                                    <button onClick={() => handleCopy(generated.social, 'social')} className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                                    <button onClick={() => handleCopy(generated.socialPost, 'social')} className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
                                         {copiedField === 'social' ? <><CheckCircle size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
                                     </button>
                                 </div>
                                 <div className="p-4 rounded-xl bg-purple-50 border border-purple-100 whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
-                                    {generated.social}
+                                    {generated.socialPost}
                                 </div>
                             </div>
 
@@ -189,15 +217,35 @@ export default function ImpactStory() {
                                     <h2 className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Space Grotesk' }}>
                                         Coordinator Summary
                                     </h2>
-                                    <button onClick={() => handleCopy(generated.coordinator, 'coordinator')} className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                                    <button onClick={() => handleCopy(generated.coordinatorSummary, 'coordinator')} className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
                                         {copiedField === 'coordinator' ? <><CheckCircle size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
                                     </button>
                                 </div>
                                 <div className="p-4 rounded-xl bg-green-50 border border-green-100 whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
-                                    {generated.coordinator}
+                                    {generated.coordinatorSummary}
                                 </div>
                             </div>
+
+                            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                                <h2 className="text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'Space Grotesk' }}>
+                                    Safety Notice
+                                </h2>
+                                <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 text-sm text-amber-800 leading-relaxed">
+                                    {generated.safetyNotice}
+                                </div>
+                                {generated.fallback_used && (
+                                    <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs text-blue-700 font-medium">
+                                        <Shield size={13} />
+                                        Safe fallback message used.
+                                    </div>
+                                )}
+                            </div>
                         </>
+                    ) : loading ? (
+                        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
+                            <Loader2 size={40} className="mx-auto text-[var(--brand-primary)] animate-spin mb-3" />
+                            <p className="text-sm text-gray-500">Generating safe awareness content...</p>
+                        </div>
                     ) : (
                         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
                             <Heart size={40} className="mx-auto text-gray-300 mb-3" />

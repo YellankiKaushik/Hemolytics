@@ -158,6 +158,8 @@ export async function generateOutreachMessage(context: OutreachContext): Promise
     provider: string;
     safetyNotice: string;
     conversationId: string;
+    bedrock_available?: boolean;
+    fallback_used?: boolean;
 }> {
     if (!IS_AWS_CONNECTED) {
         // Generate a Bedrock-style message locally
@@ -169,9 +171,11 @@ export async function generateOutreachMessage(context: OutreachContext): Promise
             provider: 'AWS Bedrock',
             safetyNotice: 'AI-assisted message only. No medical claims. No donor health certification.',
             conversationId: `conv-${Date.now()}`,
+            bedrock_available: false,
+            fallback_used: true,
         };
     }
-    return apiFetch<{ message: string; model: string; provider: string; safetyNotice: string; conversationId: string }>(
+    return apiFetch<{ message: string; model: string; provider: string; safetyNotice: string; conversationId: string; bedrock_available?: boolean; fallback_used?: boolean }>(
         'POST', API_ENDPOINTS.chat, context
     );
 }
@@ -259,6 +263,8 @@ export async function generateImpactStory(payload: ImpactPayload): Promise<{
     socialPost: string;
     coordinatorSummary: string;
     safetyNotice: string;
+    bedrock_available?: boolean;
+    fallback_used?: boolean;
 }> {
     if (!IS_AWS_CONNECTED) {
         const { donorsContacted, responsesReceived, potentialMatches, campaignCity, bloodGroup, tone } = payload;
@@ -275,6 +281,8 @@ export async function generateImpactStory(payload: ImpactPayload): Promise<{
             socialPost: social,
             coordinatorSummary: coordinator,
             safetyNotice: 'All content follows safe messaging rules. No patient PII. No medical claims. No guaranteed survival statements.',
+            bedrock_available: false,
+            fallback_used: true,
         };
     }
     return apiFetch<Record<string, unknown>>('POST', API_ENDPOINTS.impactStory, payload);

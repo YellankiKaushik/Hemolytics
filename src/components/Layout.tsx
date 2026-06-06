@@ -3,19 +3,29 @@ import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
 import {
     LayoutDashboard, Database, Search, MessageSquare, Activity,
-    Heart, Settings, ChevronLeft, ChevronRight, Droplets, Menu, X, ShieldAlert
+    Heart, Settings, ChevronLeft, ChevronRight, Droplets, Menu, X, ShieldAlert, Home
 } from 'lucide-react';
 
 const SAFETY_NOTE = 'Hemolytics does not certify donor health, donor eligibility, or blood safety. It assists coordinators with donor prioritization, outreach, response understanding, and awareness messaging. Final decisions remain with authorized human/medical staff.';
 
 const navItems = [
+    { to: '/', icon: Home, label: 'Home' },
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/dataset', icon: Database, label: 'Dataset Ingestion' },
+    { to: '/dataset-ingestion', icon: Database, label: 'Dataset Ingestion' },
     { to: '/smartmatch', icon: Search, label: 'SmartMatch' },
-    { to: '/outreach', icon: MessageSquare, label: 'AI Outreach' },
-    { to: '/responses', icon: Activity, label: 'Response Tracking' },
-    { to: '/impact', icon: Heart, label: 'Impact Story' },
+    { to: '/ai-outreach', icon: MessageSquare, label: 'AI Outreach' },
+    { to: '/response-tracking', icon: Activity, label: 'Response Tracking' },
+    { to: '/impact-story', icon: Heart, label: 'Impact Story' },
     { to: '/api-settings', icon: Settings, label: 'API Settings' },
+];
+
+const flowSteps = [
+    { label: 'Dataset', path: '/dataset-ingestion' },
+    { label: 'Dashboard', path: '/dashboard' },
+    { label: 'SmartMatch', path: '/smartmatch' },
+    { label: 'Outreach', path: '/ai-outreach' },
+    { label: 'Responses', path: '/response-tracking' },
+    { label: 'Impact', path: '/impact-story' },
 ];
 
 export default function Layout() {
@@ -132,6 +142,33 @@ export default function Layout() {
                         >
                             <X size={14} />
                         </button>
+                    </div>
+                )}
+
+                {location.pathname !== '/' && (
+                    <div className="px-4 py-3 bg-white border-b border-gray-100 overflow-x-auto">
+                        <div className="flex items-center gap-2 min-w-max">
+                            {flowSteps.map((step, index) => {
+                                const active = location.pathname === step.path;
+                                return (
+                                    <React.Fragment key={step.path}>
+                                        <NavLink
+                                            to={step.path}
+                                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition ${active
+                                                ? 'bg-[var(--brand-primary)] text-white border-[var(--brand-primary)]'
+                                                : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
+                                                }`}
+                                        >
+                                            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${active ? 'bg-white/20' : 'bg-white border border-gray-200'}`}>
+                                                {index + 1}
+                                            </span>
+                                            {step.label}
+                                        </NavLink>
+                                        {index < flowSteps.length - 1 && <span className="text-gray-300">/</span>}
+                                    </React.Fragment>
+                                );
+                            })}
+                        </div>
                     </div>
                 )}
 

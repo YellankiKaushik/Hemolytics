@@ -1,18 +1,18 @@
 import React from 'react';
 import {
-    Settings, Server, Database, Cloud, Shield, Globe,
-    Cpu, FileText, Wifi, WifiOff
+    Activity, CheckCircle, Cloud, Cpu, Database, FileText,
+    Globe, Server, Shield, Wifi, WifiOff
 } from 'lucide-react';
 import { IS_AWS_CONNECTED, API_BASE_URL, BEDROCK_MODEL_ID } from '../config/apiConfig';
 
 const endpoints = [
     { method: 'GET' as const, path: '/health', description: 'Health check endpoint' },
     { method: 'GET' as const, path: '/dashboard', description: 'Dashboard metrics and summary data' },
+    { method: 'POST' as const, path: '/load-dataset', description: 'Ingest Blood Warriors CSV dataset' },
     { method: 'POST' as const, path: '/match', description: 'Run SmartMatch donor ranking' },
     { method: 'POST' as const, path: '/chat', description: 'AI outreach message generation via Bedrock' },
-    { method: 'POST' as const, path: '/response', description: 'Record and track donor responses' },
-    { method: 'POST' as const, path: '/impact-story', description: 'Generate impact/awareness content' },
-    { method: 'POST' as const, path: '/load-dataset', description: 'Ingest Blood Warriors CSV dataset' },
+    { method: 'POST' as const, path: '/response', description: 'Record donor responses and escalation status' },
+    { method: 'POST' as const, path: '/impact-story', description: 'Generate safe impact and awareness content' },
 ];
 
 const dynamoTables = [
@@ -27,6 +27,12 @@ const methodColors: Record<string, string> = {
     POST: 'bg-blue-100 text-blue-700',
 };
 
+const liveChecks = [
+    { label: 'Health endpoint', path: '/health', status: 'Confirms API Gateway and Lambda are reachable', tone: 'bg-green-50 text-green-700 border-green-100', icon: CheckCircle },
+    { label: 'Dashboard endpoint', path: '/dashboard', status: 'Returns sampled analytics for demo-speed loading', tone: 'bg-blue-50 text-blue-700 border-blue-100', icon: Activity },
+    { label: 'SmartMatch endpoint', path: '/match', status: 'Ranks donors for coordinator review', tone: 'bg-purple-50 text-purple-700 border-purple-100', icon: Shield },
+];
+
 export default function ApiSettings() {
     const modeLabel = IS_AWS_CONNECTED ? 'AWS Connected Mode' : 'Mock Mode';
     const modeColor = IS_AWS_CONNECTED ? 'bg-green-100 text-green-700 border-green-200' : 'bg-yellow-100 text-yellow-700 border-yellow-200';
@@ -34,25 +40,23 @@ export default function ApiSettings() {
 
     return (
         <div className="p-4 lg:p-6 space-y-5">
-            {/* Header */}
             <div>
                 <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Space Grotesk' }}>
-                    API Settings & Backend Contract
+                    AWS Connection & Backend Contract
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
-                    Final AWS architecture and API endpoints for the Hemolytics prototype
+                    Live AWS connection, API endpoints, DynamoDB tables, Bedrock model, and production readiness notes for the demo.
                 </p>
             </div>
 
-            {/* Current Mode Banner */}
             <div className={`flex items-center gap-4 p-4 rounded-xl border ${modeColor}`}>
                 <ModeIcon size={20} />
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                     <div className="text-sm font-semibold">Current Mode: {modeLabel}</div>
-                    <div className="text-xs mt-0.5 opacity-75">
+                    <div className="text-xs mt-0.5 opacity-75 break-all">
                         {IS_AWS_CONNECTED
                             ? <>Connecting to: <span className="font-mono">{API_BASE_URL}</span></>
-                            : <>VITE_API_BASE_URL is not set — all features run with local mock data</>
+                            : <>VITE_API_BASE_URL is not set - all features run with local mock data</>
                         }
                     </div>
                 </div>
@@ -61,28 +65,42 @@ export default function ApiSettings() {
                 </div>
             </div>
 
-            {/* How to switch mode */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {liveChecks.map(check => {
+                    const Icon = check.icon;
+                    return (
+                        <div key={check.path} className={`rounded-xl border p-4 ${check.tone}`}>
+                            <div className="flex items-center gap-2 text-sm font-semibold">
+                                <Icon size={15} />
+                                {check.label}
+                            </div>
+                            <div className="font-mono text-xs mt-1">{check.path}</div>
+                            <div className="text-xs mt-2 opacity-80">{check.status}</div>
+                        </div>
+                    );
+                })}
+            </div>
+
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
                 <h2 className="text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Space Grotesk' }}>
-                    Switch Mode
+                    Frontend Environment
                 </h2>
                 <p className="text-xs text-gray-500 mb-2">
-                    To connect to your AWS backend, set the <code className="bg-gray-100 px-1 rounded font-mono">VITE_API_BASE_URL</code> environment variable:
+                    Amplify should set <code className="bg-gray-100 px-1 rounded font-mono">VITE_API_BASE_URL</code> to the live API Gateway URL:
                 </p>
                 <pre className="bg-gray-900 text-green-400 text-xs font-mono p-3 rounded-lg overflow-x-auto">
-                    VITE_API_BASE_URL=https://your-api-gateway-url
+                    VITE_API_BASE_URL=https://w1nxgpj5ng.execute-api.us-east-1.amazonaws.com/Prod
                 </pre>
                 <p className="text-xs text-gray-400 mt-2">
-                    Then restart the dev server. The app will automatically detect the URL and switch to AWS Connected Mode.
+                    No AWS credentials or secrets belong in frontend source code.
                 </p>
             </div>
 
-            {/* Architecture Overview */}
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
                 <h2 className="text-sm font-semibold text-gray-700 mb-4" style={{ fontFamily: 'Space Grotesk' }}>
                     AWS Architecture
                 </h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
                     {[
                         { icon: Globe, label: 'React + Vite\nTailwind CSS', color: 'text-blue-600 bg-blue-50' },
                         { icon: Cloud, label: 'Amplify / S3', color: 'text-orange-600 bg-orange-50' },
@@ -90,8 +108,9 @@ export default function ApiSettings() {
                         { icon: Cpu, label: 'AWS Lambda', color: 'text-purple-600 bg-purple-50' },
                         { icon: Database, label: 'DynamoDB', color: 'text-indigo-600 bg-indigo-50' },
                         { icon: FileText, label: 'Bedrock\nClaude 3 Haiku', color: 'text-red-600 bg-red-50' },
-                    ].map((item, i) => (
-                        <div key={i} className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100">
+                        { icon: Shield, label: 'S3 + CloudWatch', color: 'text-gray-700 bg-gray-100' },
+                    ].map((item) => (
+                        <div key={item.label} className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100">
                             <div className={`w-10 h-10 rounded-lg ${item.color} flex items-center justify-center`}>
                                 <item.icon size={20} />
                             </div>
@@ -101,11 +120,10 @@ export default function ApiSettings() {
                 </div>
                 <div className="mt-4 flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 text-xs text-gray-500">
                     <Shield size={14} />
-                    <span>CloudWatch for monitoring • S3 for static assets • Bedrock Claude 3 Haiku for AI</span>
+                    <span>React + Amplify/S3 -&gt; API Gateway -&gt; Lambda -&gt; DynamoDB -&gt; Bedrock -&gt; S3 -&gt; CloudWatch</span>
                 </div>
             </div>
 
-            {/* API Endpoints */}
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="p-5 border-b border-gray-100">
                     <h2 className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Space Grotesk' }}>
@@ -138,7 +156,6 @@ export default function ApiSettings() {
                 </div>
             </div>
 
-            {/* DynamoDB Tables */}
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
                 <h2 className="text-sm font-semibold text-gray-700 mb-4" style={{ fontFamily: 'Space Grotesk' }}>
                     DynamoDB Tables
@@ -159,7 +176,6 @@ export default function ApiSettings() {
                 </div>
             </div>
 
-            {/* Bedrock Model Info */}
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
                 <h2 className="text-sm font-semibold text-gray-700 mb-4" style={{ fontFamily: 'Space Grotesk' }}>
                     AI Model Configuration
@@ -172,8 +188,8 @@ export default function ApiSettings() {
                         </div>
                         <div className="space-y-1 text-xs text-red-700">
                             <div><strong>Model:</strong> Claude 3 Haiku</div>
-                            <div className="font-mono text-[11px]">{BEDROCK_MODEL_ID}</div>
-                            <div className="mt-2 text-[11px] text-red-600">Used for: outreach generation, intent detection, impact content</div>
+                            <div className="font-mono text-[11px] break-all">{BEDROCK_MODEL_ID}</div>
+                            <div className="mt-2 text-[11px] text-red-600">Used for: outreach generation and impact content.</div>
                         </div>
                     </div>
                     <div className="p-4 rounded-xl bg-blue-50 border border-blue-100">
@@ -182,33 +198,31 @@ export default function ApiSettings() {
                             <span className="text-sm font-semibold text-blue-800">Safety Configuration</span>
                         </div>
                         <div className="space-y-1 text-xs text-blue-700">
-                            <div>✓ No medical claims in generated content</div>
-                            <div>✓ No patient PII in outreach messages</div>
-                            <div>✓ No donor health certification</div>
-                            <div>✓ Coordinator final decision preserved</div>
-                            <div>✓ Anonymized impact/awareness content</div>
+                            <div>No medical claims in generated content.</div>
+                            <div>No patient PII in outreach messages.</div>
+                            <div>No donor health certification.</div>
+                            <div>Coordinator final decision preserved.</div>
+                            <div>Anonymized impact and awareness content.</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Important Notes */}
             <div className="bg-amber-50 rounded-xl border border-amber-200 p-4">
                 <h2 className="text-sm font-semibold text-amber-800 mb-2" style={{ fontFamily: 'Space Grotesk' }}>
-                    Important Notes
+                    Production Readiness Notes
                 </h2>
                 <ul className="space-y-1 text-xs text-amber-700">
-                    <li>• This frontend uses <strong>mock data</strong> and mock service functions. Backend integration will be added later.</li>
-                    <li>• All AI features route through <strong>AWS Bedrock Claude 3 Haiku</strong> — no direct Anthropic or OpenAI API calls.</li>
-                    <li>• No PostgreSQL, Redis, or other external databases are used as the primary data store.</li>
-                    <li>• No production WhatsApp integration — outreach is simulated via mock responses.</li>
+                    <li>CloudWatch supports Lambda/API observability and audit trails.</li>
+                    <li>AI features route through AWS Bedrock Claude 3 Haiku; no direct Anthropic or OpenAI API calls.</li>
+                    <li>DynamoDB is the primary serverless data store for donor, request, conversation, and response records.</li>
+                    <li>WhatsApp Business API, role-based access, budget controls, monitoring alerts, and human verification workflow remain future integrations.</li>
                 </ul>
             </div>
 
-            {/* Safety footer */}
             <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
                 <Shield size={14} />
-                <span>Hemolytics prototype architecture. Backend targets AWS API Gateway → Lambda → DynamoDB → Bedrock. Currently running in {modeLabel}.</span>
+                <span>Hemolytics prototype architecture. Backend targets AWS API Gateway -&gt; Lambda -&gt; DynamoDB -&gt; Bedrock. Currently running in {modeLabel}.</span>
             </div>
         </div>
     );

@@ -151,7 +151,7 @@ export default function Dashboard() {
                     ]}
                 />
                 <MetricBlock
-                    title="Active Requests"
+                    title="Request Pipeline"
                     subtitle="Current bridge/request pressure"
                     icon={Activity}
                     tone="bg-red-50 text-red-600"

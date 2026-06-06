@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { ImpactTone } from '../types';
 import { generateImpactStory } from '../services/api';
 import {
@@ -13,6 +14,7 @@ const tones: { value: ImpactTone; label: string; desc: string }[] = [
 ];
 
 export default function ImpactStory() {
+    const navigate = useNavigate();
     const [donorsContacted, setDonorsContacted] = useState(12);
     const [responsesReceived, setResponsesReceived] = useState(7);
     const [potentialMatches, setPotentialMatches] = useState(4);
@@ -71,7 +73,7 @@ export default function ImpactStory() {
                     Impact & Awareness Story
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
-                    Generate safe awareness, motivation, and social content
+                    Create anonymized awareness and coordinator summaries from outreach activity.
                 </p>
             </div>
 
@@ -260,6 +262,17 @@ export default function ImpactStory() {
                 <Shield size={14} />
                 <span>All generated content follows safe messaging rules. No patient PII. No medical claims. No guaranteed survival statements.</span>
             </div>
+
+            {generated && (
+                <div className="flex justify-end">
+                    <button
+                        onClick={() => navigate('/api-settings')}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition"
+                    >
+                        View API Settings / Final Demo <CheckCircle size={16} />
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

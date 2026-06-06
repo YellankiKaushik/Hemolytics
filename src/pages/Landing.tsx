@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     ArrowRight, Bot, Database, Gauge, HeartPulse, MessageSquare,
-    ShieldCheck, Sparkles, Users, Activity, Megaphone
+    ShieldCheck, Sparkles, Users, Activity, Megaphone, Wifi
 } from 'lucide-react';
 
 const workflow = [
@@ -20,6 +20,21 @@ const roadmap = [
     'Community impact stories',
     'Awareness campaigns with nonprofit partners',
     'Human/medical verification workflow',
+];
+
+const outcomes = [
+    {
+        title: 'Dataset Intelligence',
+        desc: 'Cleans donor and bridge records, flags data quality gaps, and prepares coordinator-ready profiles.',
+    },
+    {
+        title: 'SmartMatch Donor Prioritization',
+        desc: 'Ranks eligible, active donors by blood group, location quality, proximity, engagement, and experience.',
+    },
+    {
+        title: 'AI-Assisted Coordinator Workflow',
+        desc: 'Drafts safe outreach, summarizes responses, supports escalation, and creates anonymized awareness content.',
+    },
 ];
 
 export default function Landing() {
@@ -53,14 +68,14 @@ export default function Landing() {
                                 </span>
                             </div>
                             <div className="mt-6 flex flex-wrap gap-3">
-                                <button onClick={() => navigate('/dashboard')} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-medium hover:bg-[var(--brand-dark)] transition">
-                                    Open Dashboard <ArrowRight size={16} />
+                                <button onClick={() => navigate('/dataset-ingestion')} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-medium hover:bg-[var(--brand-dark)] transition">
+                                    Start Demo <ArrowRight size={16} />
                                 </button>
                                 <button onClick={() => navigate('/smartmatch')} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition">
                                     Run SmartMatch
                                 </button>
-                                <button onClick={() => navigate('/ai-outreach')} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 transition">
-                                    Generate Outreach
+                                <button onClick={() => navigate('/api-settings')} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 transition">
+                                    View AWS Connection <Wifi size={16} />
                                 </button>
                             </div>
                         </div>
@@ -89,6 +104,15 @@ export default function Landing() {
             </section>
 
             <section className="max-w-6xl mx-auto px-4 lg:px-6 py-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+                    {outcomes.map(item => (
+                        <div key={item.title} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                            <h2 className="text-sm font-bold text-gray-900" style={{ fontFamily: 'Space Grotesk' }}>{item.title}</h2>
+                            <p className="text-xs text-gray-500 leading-relaxed mt-2">{item.desc}</p>
+                        </div>
+                    ))}
+                </div>
+
                 <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
                     <h2 className="text-lg font-bold text-gray-900 mb-1" style={{ fontFamily: 'Space Grotesk' }}>Final MVP Workflow</h2>
                     <p className="text-sm text-gray-500 mb-4">Follow the demo from data loading through matching, outreach, response handling, and awareness messaging.</p>

@@ -20,12 +20,14 @@ const navItems = [
 ];
 
 const flowSteps = [
-    { label: 'Dataset', path: '/dataset-ingestion' },
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'SmartMatch', path: '/smartmatch' },
-    { label: 'Outreach', path: '/ai-outreach' },
-    { label: 'Responses', path: '/response-tracking' },
-    { label: 'Impact', path: '/impact-story' },
+    { label: 'Home', helper: 'Start', path: '/' },
+    { label: 'Dataset', helper: 'Load data', path: '/dataset-ingestion' },
+    { label: 'Dashboard', helper: 'Readiness', path: '/dashboard' },
+    { label: 'SmartMatch', helper: 'Rank donors', path: '/smartmatch' },
+    { label: 'Outreach', helper: 'Draft copy', path: '/ai-outreach' },
+    { label: 'Responses', helper: 'Classify', path: '/response-tracking' },
+    { label: 'Impact', helper: 'Awareness', path: '/impact-story' },
+    { label: 'API', helper: 'AWS status', path: '/api-settings' },
 ];
 
 export default function Layout() {
@@ -145,8 +147,7 @@ export default function Layout() {
                     </div>
                 )}
 
-                {location.pathname !== '/' && (
-                    <div className="px-4 py-3 bg-white border-b border-gray-100 overflow-x-auto">
+                <div className="px-4 py-3 bg-white border-b border-gray-100 overflow-x-auto">
                         <div className="flex items-center gap-2 min-w-max">
                             {flowSteps.map((step, index) => {
                                 const active = location.pathname === step.path;
@@ -162,7 +163,10 @@ export default function Layout() {
                                             <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${active ? 'bg-white/20' : 'bg-white border border-gray-200'}`}>
                                                 {index + 1}
                                             </span>
-                                            {step.label}
+                                            <span className="flex flex-col leading-tight">
+                                                <span>{step.label}</span>
+                                                <span className={`hidden md:inline text-[10px] font-normal ${active ? 'text-white/75' : 'text-gray-400'}`}>{step.helper}</span>
+                                            </span>
                                         </NavLink>
                                         {index < flowSteps.length - 1 && <span className="text-gray-300">/</span>}
                                     </React.Fragment>
@@ -170,7 +174,6 @@ export default function Layout() {
                             })}
                         </div>
                     </div>
-                )}
 
                 {/* Page content */}
                 <main className="flex-1 overflow-auto">

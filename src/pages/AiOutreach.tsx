@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { bloodRequests, donors } from '../data/mockData';
 import { generateOutreachMessage } from '../services/api';
 import type { OutreachTone, OutreachLanguage } from '../types';
@@ -18,6 +19,7 @@ const persona = {
 
 
 export default function AiOutreach() {
+    const navigate = useNavigate();
     const [selectedRequest, setSelectedRequest] = useState(bloodRequests[0]);
     const [selectedDonor, setSelectedDonor] = useState(donors[0]);
     const [tone, setTone] = useState<OutreachTone>('WhatsApp-style');
@@ -305,6 +307,17 @@ export default function AiOutreach() {
                 <Shield size={14} />
                 <span>Hemolytics does not certify donor health or blood safety. Outreach messages are AI-assisted suggestions only.</span>
             </div>
+
+            {generated && (
+                <div className="flex justify-end">
+                    <button
+                        onClick={() => navigate('/response-tracking')}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-medium hover:bg-[var(--brand-dark)] transition"
+                    >
+                        Track donor response <Send size={16} />
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

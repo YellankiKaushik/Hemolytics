@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { runSmartMatch } from '../services/api';
 import type { MatchResult, BloodGroup } from '../types';
 import {
@@ -23,6 +24,7 @@ const cities = [
 const urgencyOptions = ['Low', 'Medium', 'High', 'Critical'];
 
 export default function SmartMatch() {
+    const navigate = useNavigate();
     const [requestId, setRequestId] = useState('REQ-001');
     const [bloodGroup, setBloodGroup] = useState<BloodGroup>('O Positive');
     const [city, setCity] = useState('Hyderabad');
@@ -79,14 +81,14 @@ export default function SmartMatch() {
                     SmartMatch Donor Ranking
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
-                    AI-assisted donor prioritization • Hard filters + weighted scoring
+                    SmartMatch ranks donors to contact first. It does not guarantee real-time availability.
                 </p>
             </div>
 
             {/* Safety note */}
             <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs">
                 <AlertTriangle size={14} />
-                <span>AI-assisted prioritization only. This does not medically approve donor eligibility or blood safety.</span>
+                <span>Prioritized for coordinator review, not medical approval. Hard filters include blood group match, eligible status, active status, and valid location.</span>
             </div>
 
             {/* Request Form */}
@@ -311,6 +313,21 @@ export default function SmartMatch() {
                             )}
                         </div>
                     ))}
+                </div>
+            )}
+
+            {selectedDonor && (
+                <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div>
+                        <div className="text-sm font-semibold text-green-800">Donor selected for coordinator outreach</div>
+                        <div className="text-xs text-green-700 mt-0.5">Next step: draft a safe message. Availability and eligibility still require human follow-up.</div>
+                    </div>
+                    <button
+                        onClick={() => navigate('/ai-outreach')}
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition"
+                    >
+                        Generate Outreach <ArrowRight size={16} />
+                    </button>
                 </div>
             )}
 

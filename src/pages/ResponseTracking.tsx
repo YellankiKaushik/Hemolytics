@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { donorResponses } from '../data/mockData';
 import { submitDonorResponse } from '../services/api';
 import type { ResponseStatus, DonorResponse, MatchResult } from '../types';
@@ -28,6 +29,7 @@ const escalationRules = [
 ];
 
 export default function ResponseTracking() {
+    const navigate = useNavigate();
     const [responses, setResponses] = useState<DonorResponse[]>(donorResponses);
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
     const [testResponseText, setTestResponseText] = useState('Yes, I am available');
@@ -159,7 +161,7 @@ export default function ResponseTracking() {
                     Donor Response Tracking
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
-                    Classify donor replies, update visible status, and decide whether to escalate to the next ranked donor
+                    Paste or record donor replies. Hemolytics classifies intent and suggests the next coordinator action.
                 </p>
             </div>
 
@@ -168,7 +170,18 @@ export default function ResponseTracking() {
                     <h2 className="text-sm font-semibold text-gray-800 mb-2" style={{ fontFamily: 'Space Grotesk' }}>
                         Test Donor Reply
                     </h2>
-                    <p className="text-xs text-gray-500 mb-3">Try "Yes, I am available" or "Sorry, I cannot donate today".</p>
+                    <p className="text-xs text-gray-500 mb-3">Try a sample below or paste a donor reply.</p>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                        {['Yes, I am available.', 'Sorry, I cannot donate today.', 'I can come tomorrow evening.'].map(sample => (
+                            <button
+                                key={sample}
+                                onClick={() => setTestResponseText(sample)}
+                                className="px-2.5 py-1 rounded-full bg-gray-50 border border-gray-200 text-[11px] text-gray-600 hover:bg-gray-100 transition"
+                            >
+                                {sample}
+                            </button>
+                        ))}
+                    </div>
                     <textarea
                         value={testResponseText}
                         onChange={e => setTestResponseText(e.target.value)}
@@ -371,6 +384,17 @@ export default function ResponseTracking() {
                 <Shield size={14} />
                 <span>Hemolytics assists with response understanding. Escalation decisions should be reviewed by authorized coordinators.</span>
             </div>
+
+            {latestAnalysis && (
+                <div className="flex justify-end">
+                    <button
+                        onClick={() => navigate('/impact-story')}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-medium hover:bg-[var(--brand-dark)] transition"
+                    >
+                        Create Impact Story <ArrowRight size={16} />
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

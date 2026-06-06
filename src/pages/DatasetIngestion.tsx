@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { donors, bloodRequests, cleaningSummary } from '../data/mockData';
 import { useAppStore } from '../store/useAppStore';
 import { loadDataset } from '../services/api';
@@ -8,6 +9,7 @@ import {
 } from 'lucide-react';
 
 export default function DatasetIngestion() {
+    const navigate = useNavigate();
     const { datasetLoaded, setDatasetLoaded } = useAppStore();
     const [loading, setLoading] = useState(false);
     const [loaded, setLoaded] = useState(datasetLoaded);
@@ -50,8 +52,12 @@ export default function DatasetIngestion() {
                     Dataset Ingestion
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
-                    Load and process the Blood Warriors donor dataset
+                    Reload the Blood Warriors dataset from S3 through Lambda into DynamoDB for coordinator decision support.
                 </p>
+            </div>
+
+            <div className="rounded-xl bg-blue-50 border border-blue-100 p-4 text-sm text-blue-800">
+                For this hackathon deployment, dataset upload is handled through S3. The UI demonstrates ingestion and reload from the deployed backend, then shows cleaning and write summaries returned by Lambda.
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -62,8 +68,8 @@ export default function DatasetIngestion() {
                     </h2>
                     <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-[var(--brand-primary)] transition-colors">
                         <Upload size={32} className="mx-auto text-gray-400 mb-3" />
-                        <p className="text-sm text-gray-600 mb-1">Drag & drop your Blood Warriors CSV</p>
-                        <p className="text-xs text-gray-400">or click to browse</p>
+                        <p className="text-sm text-gray-600 mb-1">Dataset.csv lives in S3</p>
+                        <p className="text-xs text-gray-400">Upload through AWS S3, then reload here</p>
                         <input
                             type="file"
                             accept=".csv"
@@ -93,7 +99,7 @@ export default function DatasetIngestion() {
                     {loaded && !error && (
                         <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 border border-green-200 text-green-700 text-xs">
                             <CheckCircle size={14} />
-                            Dataset loaded successfully — {cleaningSummary.total_rows} records processed
+                            Dataset reload completed - {results?.rowsLoaded ?? cleaningSummary.total_rows} records processed
                         </div>
                     )}
                 </div>
@@ -120,6 +126,22 @@ export default function DatasetIngestion() {
                             </div>
                         ))}
                     </div>
+                    {r && (
+                        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-blue-800">
+                                <div className="font-semibold">Cleaned rows</div>
+                                <div className="text-lg font-bold mt-1">{String(r.cleanedRows ?? r.rowsLoaded ?? 0)}</div>
+                            </div>
+                            <div className="rounded-lg bg-amber-50 border border-amber-100 p-3 text-amber-800">
+                                <div className="font-semibold">Duplicate user IDs</div>
+                                <div className="text-lg font-bold mt-1">{String(r.duplicate_user_ids_detected ?? r.duplicateGroupsHandled ?? 0)}</div>
+                            </div>
+                            <div className="rounded-lg bg-green-50 border border-green-100 p-3 text-green-800">
+                                <div className="font-semibold">Donor dedupe</div>
+                                <div className="text-lg font-bold mt-1">{r.donor_deduplication_applied ? 'Applied' : 'Ready'}</div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -234,7 +256,16 @@ export default function DatasetIngestion() {
             {/* Safety footer */}
             <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
                 <Shield size={14} />
-                <span>All data shown is fictional mock data for prototype demonstration. No real PII is used.</span>
+                <span>Dataset ingestion supports coordinator analytics only. Do not upload public files containing unapproved sensitive data.</span>
+            </div>
+
+            <div className="flex justify-end">
+                <button
+                    onClick={() => navigate('/dashboard')}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-medium hover:bg-[var(--brand-dark)] transition"
+                >
+                    View Dashboard <ArrowRight size={16} />
+                </button>
             </div>
         </div>
     );

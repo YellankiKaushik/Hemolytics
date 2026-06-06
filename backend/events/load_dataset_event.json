@@ -1,0 +1,11 @@
+{
+  "resource": "/load-dataset",
+  "path": "/load-dataset",
+  "httpMethod": "POST",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "queryStringParameters": null,
+  "body": "{\"rows\":[{\"user_id\":\"DONOR-001\",\"bridge_id\":\"REQ-001\",\"role\":\"Donor\",\"blood_group\":\"O+\",\"latitude\":\"17.3850\",\"longitude\":\"78.4867\",\"bridge_blood_group\":\"O+\",\"quantity_required\":\"1\",\"expected_next_transfusion_date\":\"2026-06-20\",\"donor_type\":\"Regular\",\"donations_till_date\":\"4\",\"eligibility_status\":\"eligible\",\"total_calls\":\"6\",\"calls_to_donations_ratio\":\"0.5\",\"user_donation_active_status\":\"Active\",\"inactive_trigger_comment\":\"\"},{\"user_id\":\"DONOR-002\",\"role\":\"Donor\",\"blood_group\":\"O+\",\"latitude\":\"17.4000\",\"longitude\":\"78.4800\",\"donor_type\":\"Volunteer\",\"donations_till_date\":\"1\",\"eligibility_status\":\"eligible\",\"total_calls\":\"2\",\"calls_to_donations_ratio\":\"1.0\",\"user_donation_active_status\":\"Inactive\",\"inactive_trigger_comment\":\"Needs reactivation\"}]}",
+  "isBase64Encoded": false
+}

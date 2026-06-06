@@ -1,0 +1,11 @@
+{
+  "resource": "/match",
+  "path": "/match",
+  "httpMethod": "POST",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "queryStringParameters": null,
+  "body": "{\"requestId\":\"REQ-001\",\"requiredBloodGroup\":\"O Positive\",\"latitude\":17.385,\"longitude\":78.4867,\"city\":\"Hyderabad\",\"urgency\":\"Critical\",\"quantityRequired\":1,\"neededBy\":\"2026-06-20\"}",
+  "isBase64Encoded": false
+}

@@ -1,0 +1,292 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Hemolytics AWS serverless MVP backend.
+
+Parameters:
+  DatasetBucketName:
+    Type: String
+    Default: ""
+    Description: Optional globally unique S3 bucket name for dataset CSV storage. Leave blank to generate one from stack/account/region.
+  DatasetKey:
+    Type: String
+    Default: Dataset.csv
+    Description: Default dataset object key in the dataset bucket.
+  BedrockModelId:
+    Type: String
+    Default: anthropic.claude-3-haiku-20240307-v1:0
+    Description: AWS Bedrock model ID for Claude 3 Haiku.
+
+Conditions:
+  HasCustomDatasetBucketName: !Not [!Equals [!Ref DatasetBucketName, ""]]
+
+Globals:
+  Function:
+    Runtime: python3.11
+    CodeUri: .
+    Architectures:
+      - x86_64
+    Tracing: Active
+    Environment:
+      Variables:
+        # AWS_REGION is automatically provided by Lambda and is reserved by AWS.
+        AWS_BEDROCK_REGION: us-east-1
+        AWS_BEDROCK_MODEL_ID: !Ref BedrockModelId
+        DYNAMODB_DONORS_TABLE: !Ref DonorsTable
+        DYNAMODB_REQUESTS_TABLE: !Ref RequestsTable
+        DYNAMODB_CONVERSATIONS_TABLE: !Ref ConversationsTable
+        DYNAMODB_RESPONSES_TABLE: !Ref ResponsesTable
+        S3_DATASET_BUCKET: !Ref DatasetBucket
+        S3_DATASET_KEY: !Ref DatasetKey
+        MATCH_TOP_N_DONORS: "5"
+        MATCH_DEFAULT_RADIUS_KM: "25"
+        MATCH_MAX_RADIUS_KM: "100"
+        DASHBOARD_SCAN_LIMIT: "1000"
+        DASHBOARD_REQUEST_SCAN_LIMIT: "500"
+
+Resources:
+  HemolyticsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'*'"
+
+  DonorsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: HemolyticsDonors
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: user_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+
+  RequestsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: HemolyticsRequests
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: request_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: request_id
+          KeyType: HASH
+
+  ConversationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: HemolyticsConversations
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: conversation_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: conversation_id
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+
+  ResponsesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: HemolyticsResponses
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: response_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: response_id
+          KeyType: HASH
+
+  DatasetBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !If
+        - HasCustomDatasetBucketName
+        - !Ref DatasetBucketName
+        - !Sub hemolytics-dataset-${AWS::AccountId}-${AWS::Region}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  HemolyticsLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: HemolyticsServerlessMvpPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: DynamoDbReadWrite
+                Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Scan
+                  - dynamodb:BatchWriteItem
+                Resource:
+                  - !GetAtt DonorsTable.Arn
+                  - !GetAtt RequestsTable.Arn
+                  - !GetAtt ConversationsTable.Arn
+                  - !GetAtt ResponsesTable.Arn
+              - Sid: DatasetBucketList
+                Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource: !GetAtt DatasetBucket.Arn
+              - Sid: DatasetObjectReadWrite
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: !Sub ${DatasetBucket.Arn}/*
+              - Sid: BedrockClaudeHaikuInvoke
+                Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                Resource:
+                  - !Sub arn:${AWS::Partition}:bedrock:us-east-1::foundation-model/${BedrockModelId}
+                  - !Sub arn:${AWS::Partition}:bedrock:us-east-1::foundation-model/anthropic.claude-3-haiku-*
+
+  HealthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt HemolyticsLambdaRole.Arn
+      Handler: handlers.health.lambda_handler
+      MemorySize: 128
+      Timeout: 10
+      Events:
+        HealthApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref HemolyticsApi
+            Path: /health
+            Method: GET
+
+  DashboardFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt HemolyticsLambdaRole.Arn
+      Handler: handlers.dashboard.lambda_handler
+      MemorySize: 512
+      Timeout: 30
+      Events:
+        DashboardApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref HemolyticsApi
+            Path: /dashboard
+            Method: GET
+
+  LoadDatasetFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt HemolyticsLambdaRole.Arn
+      Handler: handlers.load_dataset.lambda_handler
+      MemorySize: 512
+      Timeout: 60
+      Events:
+        LoadDatasetApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref HemolyticsApi
+            Path: /load-dataset
+            Method: POST
+
+  MatchFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt HemolyticsLambdaRole.Arn
+      Handler: handlers.match.lambda_handler
+      MemorySize: 512
+      Timeout: 30
+      Events:
+        MatchApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref HemolyticsApi
+            Path: /match
+            Method: POST
+
+  ChatFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt HemolyticsLambdaRole.Arn
+      Handler: handlers.chat.lambda_handler
+      MemorySize: 512
+      Timeout: 45
+      Events:
+        ChatApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref HemolyticsApi
+            Path: /chat
+            Method: POST
+
+  ResponseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt HemolyticsLambdaRole.Arn
+      Handler: handlers.response.lambda_handler
+      MemorySize: 256
+      Timeout: 20
+      Events:
+        ResponseApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref HemolyticsApi
+            Path: /response
+            Method: POST
+
+  ImpactStoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt HemolyticsLambdaRole.Arn
+      Handler: handlers.impact_story.lambda_handler
+      MemorySize: 512
+      Timeout: 45
+      Events:
+        ImpactStoryApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref HemolyticsApi
+            Path: /impact-story
+            Method: POST
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway invoke URL.
+    Value: !Sub https://${HemolyticsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/Prod
+  DonorsTableName:
+    Description: Donors DynamoDB table name.
+    Value: !Ref DonorsTable
+  RequestsTableName:
+    Description: Requests DynamoDB table name.
+    Value: !Ref RequestsTable
+  ConversationsTableName:
+    Description: Conversations DynamoDB table name.
+    Value: !Ref ConversationsTable
+  ResponsesTableName:
+    Description: Responses DynamoDB table name.
+    Value: !Ref ResponsesTable
+  DatasetBucketName:
+    Description: Dataset S3 bucket name.
+    Value: !Ref DatasetBucket

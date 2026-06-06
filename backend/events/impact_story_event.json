@@ -1,0 +1,11 @@
+{
+  "resource": "/impact-story",
+  "path": "/impact-story",
+  "httpMethod": "POST",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "queryStringParameters": null,
+  "body": "{\"donorsContacted\":25,\"responsesReceived\":8,\"potentialMatches\":3,\"campaignCity\":\"Hyderabad\",\"bloodGroup\":\"O Positive\",\"patientSafeContext\":\"Recurring transfusion support request, anonymized\",\"tone\":\"warm\"}",
+  "isBase64Encoded": false
+}

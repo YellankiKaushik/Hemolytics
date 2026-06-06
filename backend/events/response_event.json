@@ -1,0 +1,11 @@
+{
+  "resource": "/response",
+  "path": "/response",
+  "httpMethod": "POST",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "queryStringParameters": null,
+  "body": "{\"requestId\":\"REQ-001\",\"donorId\":\"DONOR-001\",\"responseText\":\"No, not possible today\",\"currentRank\":1,\"rankedDonors\":[{\"rank\":1,\"donor_id\":\"DONOR-001\"},{\"rank\":2,\"donor_id\":\"DONOR-002\"}]}",
+  "isBase64Encoded": false
+}

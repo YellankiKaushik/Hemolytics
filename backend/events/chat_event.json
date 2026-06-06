@@ -1,0 +1,11 @@
+{
+  "resource": "/chat",
+  "path": "/chat",
+  "httpMethod": "POST",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "queryStringParameters": null,
+  "body": "{\"donor\":{\"user_id\":\"DONOR-001\",\"name\":\"Asha Rao\",\"blood_group\":\"O Positive\"},\"request\":{\"request_id\":\"REQ-001\",\"required_blood_group\":\"O Positive\",\"city\":\"Hyderabad\",\"urgency\":\"Critical\",\"quantity_required\":1},\"tone\":\"WhatsApp-style\",\"language\":\"English\",\"coordinatorPersona\":\"Priya\"}",
+  "isBase64Encoded": false
+}

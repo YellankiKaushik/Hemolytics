@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --brand-primary: #E53935;
+    --brand-dark: #B71C1C;
+    --brand-light: #FFCDD2;
+    --critical: #D32F2F;
+    --monitored: #F57C00;
+    --stable: #388E3C;
+    --confirmed: #1976D2;
+    --dashboard-bg: #F5F5F5;
+    --card-bg: #FFFFFF;
+    --card-border: #E0E0E0;
+    --text-primary: #212121;
+    --text-muted: #757575;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dashboard-bg);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+#root {
+    min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}

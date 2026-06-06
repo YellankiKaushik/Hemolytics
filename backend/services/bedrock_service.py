@@ -16,6 +16,26 @@ PRIYA_SYSTEM_PROMPT = (
 )
 
 
+def _bedrock_error_type(exc: Exception) -> str:
+    response = getattr(exc, "response", None)
+    if isinstance(response, dict):
+        code = response.get("Error", {}).get("Code")
+        if code:
+            return str(code)
+    return exc.__class__.__name__
+
+
+def _log_bedrock_error(exc: Exception) -> None:
+    print(
+        "BEDROCK_INVOKE_ERROR: "
+        f"{_bedrock_error_type(exc)}: {str(exc)} | "
+        f"model_id={MODEL_ID} | "
+        f"bedrock_region={BEDROCK_REGION} | "
+        "operation=invoke_model | "
+        "fallback_used=true"
+    )
+
+
 def invoke_bedrock_claude(
     messages: List[Dict[str, str]],
     system_prompt: str | None = None,
@@ -32,15 +52,19 @@ def invoke_bedrock_claude(
         "system": system_prompt or PRIYA_SYSTEM_PROMPT,
         "messages": messages,
     }
-    result = client.invoke_model(
-        modelId=MODEL_ID,
-        body=json.dumps(body),
-        contentType="application/json",
-        accept="application/json",
-    )
-    payload = json.loads(result["body"].read())
-    content = payload.get("content", [])
-    return "".join(part.get("text", "") for part in content if part.get("type") == "text").strip()
+    try:
+        result = client.invoke_model(
+            modelId=MODEL_ID,
+            body=json.dumps(body),
+            contentType="application/json",
+            accept="application/json",
+        )
+        payload = json.loads(result["body"].read())
+        content = payload.get("content", [])
+        return "".join(part.get("text", "") for part in content if part.get("type") == "text").strip()
+    except Exception as exc:
+        _log_bedrock_error(exc)
+        raise
 
 
 def _safe_outreach_fallback(donor: Dict[str, Any], request: Dict[str, Any]) -> str:
@@ -81,7 +105,7 @@ def generate_outreach_message(
             "bedrock_available": bool(message),
             "fallback_used": not bool(message),
         }
-    except Exception:
+    except Exception as exc:
         return {
             "message": _safe_outreach_fallback(donor, request),
             "model": MODEL_ID,
@@ -89,6 +113,7 @@ def generate_outreach_message(
             "safetyNotice": SAFETY_NOTICE,
             "bedrock_available": False,
             "fallback_used": True,
+            "bedrock_error_type": _bedrock_error_type(exc),
         }
 
 
@@ -150,12 +175,13 @@ def generate_impact_story(payload: Dict[str, Any]) -> Dict[str, Any]:
             "bedrock_available": bool(text),
             "fallback_used": not bool(text),
         }
-    except Exception:
+    except Exception as exc:
         return {
             **fallback,
             "safetyNotice": SAFETY_NOTICE,
             "bedrock_available": False,
             "fallback_used": True,
+            "bedrock_error_type": _bedrock_error_type(exc),
         }
 
 

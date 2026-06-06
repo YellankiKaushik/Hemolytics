@@ -91,8 +91,11 @@ export async function loadDataset() {
         await new Promise(resolve => setTimeout(resolve, 1500));
         return {
             rowsLoaded: cleaningSummary.total_rows,
+            cleanedRows: cleaningSummary.total_rows,
             uniqueUsersCreated: cleaningSummary.unique_users,
             duplicateGroupsHandled: cleaningSummary.duplicate_user_ids,
+            duplicate_user_ids_detected: cleaningSummary.duplicate_user_ids,
+            donor_deduplication_applied: true,
             donorsWrittenToHemolyticsDonors: cleaningSummary.donor_profiles_created,
             requestsWrittenToHemolyticsRequests: cleaningSummary.bridge_request_candidates,
             invalidBloodGroupsFlagged: cleaningSummary.missing_blood_groups,

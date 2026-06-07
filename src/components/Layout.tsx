@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { useAppStore } from '../store/useAppStore';
 import {
-    LayoutDashboard, Database, Search, MessageSquare, Activity,
-    Heart, Settings, ChevronLeft, ChevronRight, Droplets, Menu, X, ShieldAlert, Home
+    Activity, Database, Droplets, Heart, Home, LayoutDashboard,
+    Menu, MessageSquare, Search, Settings, ShieldAlert, X
 } from 'lucide-react';
 
 const SAFETY_NOTE = 'Hemolytics does not certify donor health, donor eligibility, or blood safety. It assists coordinators with donor prioritization, outreach, response understanding, and awareness messaging. Final decisions remain with authorized human/medical staff.';
 
 const navItems = [
     { to: '/', icon: Home, label: 'Home' },
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/dataset-ingestion', icon: Database, label: 'Dataset Ingestion' },
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/smartmatch', icon: Search, label: 'SmartMatch' },
     { to: '/ai-outreach', icon: MessageSquare, label: 'AI Outreach' },
     { to: '/response-tracking', icon: Activity, label: 'Response Tracking' },
@@ -30,130 +29,112 @@ const flowSteps = [
     { label: 'API', helper: 'AWS status', path: '/api-settings' },
 ];
 
-export default function Layout() {
-    const { sidebarOpen, toggleSidebar } = useAppStore();
+function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     const location = useLocation();
-    const [mobileOpen, setMobileOpen] = useState(false);
-    const [safetyDismissed, setSafetyDismissed] = useState(false);
-    const showSidebarLabels = sidebarOpen || mobileOpen;
 
     return (
-        <div className="flex min-h-screen bg-gray-50 overflow-x-hidden">
-            {/* Mobile overlay */}
-            {mobileOpen && (
-                <div className="fixed inset-0 bg-black/40 z-30 md:hidden" onClick={() => setMobileOpen(false)} />
-            )}
-
-            {/* Sidebar */}
-            <aside
-                className={`fixed md:sticky top-0 left-0 h-screen z-40 flex flex-col bg-[#1a1a2e] text-white transition-all duration-300 shadow-2xl md:shadow-none
-          w-[17rem] max-w-[84vw] md:max-w-none ${sidebarOpen ? 'md:w-[17rem]' : 'md:w-[4.75rem]'}
-          ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-        `}
-            >
-                {/* Logo */}
-                <div className={`flex items-center gap-2 h-16 border-b border-white/10 ${showSidebarLabels ? 'px-4' : 'px-3 justify-center'}`}>
-                    <div className="w-8 h-8 rounded-lg bg-[var(--brand-primary)] flex items-center justify-center flex-shrink-0">
-                        <Droplets size={18} className="text-white" />
-                    </div>
-                    {showSidebarLabels && (
-                        <div className="flex flex-col min-w-0">
-                            <span className="font-bold text-sm tracking-wide" style={{ fontFamily: 'Space Grotesk' }}>
-                                HEMOLYTICS
-                            </span>
-                            <span className="text-[10px] text-gray-400">AI Donor Intelligence</span>
-                        </div>
-                    )}
-                    <button
-                        onClick={() => setMobileOpen(false)}
-                        className="ml-auto md:hidden p-2 rounded-lg text-gray-400 hover:bg-white/10 hover:text-white"
-                        aria-label="Close navigation"
-                    >
-                        <X size={18} />
-                    </button>
+        <>
+            <div className="flex items-center gap-3 px-5 h-20 border-b border-white/10">
+                <div className="w-10 h-10 rounded-xl bg-[var(--brand-primary)] flex items-center justify-center flex-shrink-0 shadow-lg shadow-red-950/20">
+                    <Droplets size={21} className="text-white" />
                 </div>
-
-                {/* Nav */}
-                <nav className="flex-1 py-4 overflow-y-auto">
-                    {navItems.map((item) => {
-                        const Icon = item.icon;
-                        const active = location.pathname === item.to;
-                        return (
-                            <NavLink
-                                key={item.to}
-                                to={item.to}
-                                onClick={() => setMobileOpen(false)}
-                                className={`flex items-center gap-3 min-h-11 px-4 py-2.5 mx-2 rounded-lg text-sm transition-all ${showSidebarLabels ? '' : 'justify-center px-0'}
-                  ${active
-                                        ? 'bg-[var(--brand-primary)] text-white shadow-lg shadow-red-900/30'
-                                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                                    }
-                `}
-                            >
-                                <Icon size={18} className="flex-shrink-0" />
-                                {showSidebarLabels && <span className="truncate">{item.label}</span>}
-                            </NavLink>
-                        );
-                    })}
-                </nav>
-
-                {/* Backend label */}
-                {showSidebarLabels && (
-                    <div className="px-4 py-3 border-t border-white/10">
-                        <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Backend</div>
-                        <div className="text-[11px] text-gray-400">API Gateway {">"} Lambda {">"} DynamoDB</div>
-                        <div className="text-[11px] text-gray-400">Bedrock Claude 3.5 Haiku</div>
+                <div className="min-w-0">
+                    <div className="font-bold text-base tracking-wide text-white" style={{ fontFamily: 'Space Grotesk' }}>
+                        HEMOLYTICS
                     </div>
-                )}
+                    <div className="text-[11px] text-gray-400">AI Donor Intelligence</div>
+                </div>
+            </div>
 
-                {/* Collapse toggle (desktop only) */}
-                <button
-                    onClick={toggleSidebar}
-                    className="hidden md:flex items-center justify-center h-11 border-t border-white/10 text-gray-400 hover:text-white transition"
-                >
-                    {sidebarOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-                </button>
+            <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
+                {navItems.map((item) => {
+                    const Icon = item.icon;
+                    const active = location.pathname === item.to;
+                    return (
+                        <NavLink
+                            key={item.to}
+                            to={item.to}
+                            onClick={onNavigate}
+                            className={`flex items-center gap-3 min-h-11 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${active
+                                ? 'bg-[var(--brand-primary)] text-white shadow-lg shadow-red-950/25'
+                                : 'text-gray-300 hover:bg-white/8 hover:bg-white/10 hover:text-white'
+                                }`}
+                        >
+                            <Icon size={18} className="flex-shrink-0" />
+                            <span className="truncate">{item.label}</span>
+                        </NavLink>
+                    );
+                })}
+            </nav>
+
+            <div className="p-4">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-4">
+                    <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-2">Backend</div>
+                    <div className="text-xs text-gray-200 leading-relaxed">API Gateway to Lambda to DynamoDB</div>
+                    <div className="text-xs text-gray-400 mt-1">Bedrock Claude 3.5 Haiku</div>
+                    <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-green-500/10 px-2.5 py-1 text-[11px] text-green-200 border border-green-400/20">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                        AWS Connected
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+
+export default function Layout() {
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const [safetyDismissed, setSafetyDismissed] = useState(false);
+    const location = useLocation();
+
+    return (
+        <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+            <aside className="hidden md:flex fixed inset-y-0 left-0 z-30 w-[280px] flex-col bg-[#1a1a2e] text-white">
+                <SidebarContent />
             </aside>
 
-            {/* Main */}
-            <div className="flex-1 flex flex-col min-h-screen min-w-0">
-                {/* Top bar */}
-                <header className="sticky top-0 z-20 flex items-center justify-between h-14 px-4 bg-white border-b border-gray-200">
-                    {/* Mobile hamburger */}
+            {mobileOpen && (
+                <div className="fixed inset-0 z-40 md:hidden">
+                    <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
+                    <aside className="absolute inset-y-0 left-0 flex w-[280px] max-w-[84vw] flex-col bg-[#1a1a2e] text-white shadow-2xl">
+                        <button
+                            onClick={() => setMobileOpen(false)}
+                            className="absolute right-3 top-3 z-10 min-h-10 min-w-10 inline-flex items-center justify-center rounded-xl text-gray-300 hover:bg-white/10 hover:text-white"
+                            aria-label="Close navigation"
+                        >
+                            <X size={19} />
+                        </button>
+                        <SidebarContent onNavigate={() => setMobileOpen(false)} />
+                    </aside>
+                </div>
+            )}
+
+            <div className="min-h-screen min-w-0 md:pl-[280px]">
+                <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b border-gray-200 bg-white px-4 md:hidden">
                     <button
-                        className="md:hidden min-h-10 min-w-10 inline-flex items-center justify-center rounded-lg hover:bg-gray-100"
+                        className="min-h-10 min-w-10 inline-flex items-center justify-center rounded-xl hover:bg-gray-100"
                         onClick={() => setMobileOpen(true)}
                         aria-label="Open navigation"
                     >
                         <Menu size={20} />
                     </button>
-
-                    <div className="md:hidden min-w-0 flex-1 px-3">
+                    <div className="min-w-0 flex-1">
                         <div className="text-sm font-bold text-gray-900 truncate" style={{ fontFamily: 'Space Grotesk' }}>Hemolytics</div>
+                        <div className="text-[11px] text-gray-500 truncate">AI Donor Intelligence</div>
                     </div>
-                    <div className="hidden md:block flex-1" />
-
-                    {/* Right side badges */}
-                    <div className="flex items-center gap-2 min-w-0">
-                        <div className="flex items-center gap-2 px-2 sm:px-3 py-1 rounded-full bg-gray-100 text-xs whitespace-nowrap">
-                            <span className="w-2 h-2 rounded-full bg-green-500" />
-                            <span className="text-gray-600 hidden xs:inline">Prototype Ready</span>
-                            <span className="text-gray-600 xs:hidden">Ready</span>
-                        </div>
-                        <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-xs text-blue-700 border border-blue-200">
-                            <span>Bedrock Claude 3.5 Haiku</span>
-                        </div>
+                    <div className="flex items-center gap-2 rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-600">
+                        <span className="h-2 w-2 rounded-full bg-green-500" />
+                        Ready
                     </div>
                 </header>
 
-                {/* Safety Banner */}
                 {!safetyDismissed && (
-                    <div className="flex items-start gap-2 sm:gap-3 px-3 sm:px-4 py-2 bg-amber-50 border-b border-amber-200 text-amber-800 text-xs">
+                    <div className="flex items-start gap-2 sm:gap-3 px-3 sm:px-5 py-2.5 bg-amber-50 border-b border-amber-200 text-amber-800 text-xs">
                         <ShieldAlert size={16} className="flex-shrink-0 mt-0.5 text-amber-600" />
                         <span className="flex-1 leading-snug sm:leading-relaxed line-clamp-3 sm:line-clamp-none">{SAFETY_NOTE}</span>
                         <button
                             onClick={() => setSafetyDismissed(true)}
-                            className="flex-shrink-0 text-amber-600 hover:text-amber-800 ml-1 min-h-7 min-w-7 inline-flex items-center justify-center"
+                            className="flex-shrink-0 text-amber-600 hover:text-amber-800 min-h-7 min-w-7 inline-flex items-center justify-center"
                             aria-label="Dismiss safety notice"
                         >
                             <X size={14} />
@@ -161,36 +142,35 @@ export default function Layout() {
                     </div>
                 )}
 
-                <div className="px-3 sm:px-4 py-2 sm:py-3 bg-white border-b border-gray-100 overflow-x-auto">
-                        <div className="flex items-center gap-1.5 sm:gap-2 min-w-max">
-                            {flowSteps.map((step, index) => {
-                                const active = location.pathname === step.path;
-                                return (
-                                    <React.Fragment key={step.path}>
-                                        <NavLink
-                                            to={step.path}
-                                            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-medium border transition whitespace-nowrap ${active
-                                                ? 'bg-[var(--brand-primary)] text-white border-[var(--brand-primary)]'
-                                                : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
-                                                }`}
-                                        >
-                                            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${active ? 'bg-white/20' : 'bg-white border border-gray-200'}`}>
-                                                {index + 1}
-                                            </span>
-                                            <span className="flex flex-col leading-tight">
-                                                <span>{step.label}</span>
-                                                <span className={`hidden md:inline text-[10px] font-normal ${active ? 'text-white/75' : 'text-gray-400'}`}>{step.helper}</span>
-                                            </span>
-                                        </NavLink>
-                                        {index < flowSteps.length - 1 && <span className="hidden sm:inline text-gray-300">/</span>}
-                                    </React.Fragment>
-                                );
-                            })}
-                        </div>
+                <div className="px-3 sm:px-5 py-2.5 bg-white border-b border-gray-100 overflow-x-auto">
+                    <div className="flex items-center gap-1.5 sm:gap-2 min-w-max">
+                        {flowSteps.map((step, index) => {
+                            const active = location.pathname === step.path;
+                            return (
+                                <React.Fragment key={step.path}>
+                                    <NavLink
+                                        to={step.path}
+                                        className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-medium border transition whitespace-nowrap ${active
+                                            ? 'bg-[var(--brand-primary)] text-white border-[var(--brand-primary)]'
+                                            : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
+                                            }`}
+                                    >
+                                        <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${active ? 'bg-white/20' : 'bg-white border border-gray-200'}`}>
+                                            {index + 1}
+                                        </span>
+                                        <span className="flex flex-col leading-tight">
+                                            <span>{step.label}</span>
+                                            <span className={`hidden md:inline text-[10px] font-normal ${active ? 'text-white/75' : 'text-gray-400'}`}>{step.helper}</span>
+                                        </span>
+                                    </NavLink>
+                                    {index < flowSteps.length - 1 && <span className="hidden sm:inline text-gray-300">/</span>}
+                                </React.Fragment>
+                            );
+                        })}
                     </div>
+                </div>
 
-                {/* Page content */}
-                <main className="flex-1 overflow-auto">
+                <main className="min-w-0">
                     <Outlet />
                 </main>
             </div>

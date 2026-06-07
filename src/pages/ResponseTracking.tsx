@@ -154,7 +154,7 @@ export default function ResponseTracking() {
     }, {} as Record<string, number>);
 
     return (
-        <div className="p-4 lg:p-6 space-y-5">
+        <div className="p-3 sm:p-4 lg:p-6 space-y-5">
             {/* Header */}
             <div>
                 <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Space Grotesk' }}>
@@ -176,7 +176,7 @@ export default function ResponseTracking() {
                             <button
                                 key={sample}
                                 onClick={() => setTestResponseText(sample)}
-                                className="px-2.5 py-1 rounded-full bg-gray-50 border border-gray-200 text-[11px] text-gray-600 hover:bg-gray-100 transition"
+                                className="min-h-8 px-2.5 py-1 rounded-full bg-gray-50 border border-gray-200 text-[11px] text-gray-600 hover:bg-gray-100 transition mobile-safe-text"
                             >
                                 {sample}
                             </button>
@@ -208,14 +208,14 @@ export default function ResponseTracking() {
                     </h2>
                     {latestAnalysis ? (
                         <div className="space-y-3">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-3">
                                 <div className="rounded-lg bg-blue-50 border border-blue-100 p-3">
                                     <div className="text-[11px] text-blue-600 font-medium">detectedIntent</div>
-                                    <div className="text-sm font-bold text-blue-900 mt-1">{latestAnalysis.detectedIntent}</div>
+                                    <div className="text-sm font-bold text-blue-900 mt-1 mobile-safe-text">{latestAnalysis.detectedIntent}</div>
                                 </div>
                                 <div className="rounded-lg bg-green-50 border border-green-100 p-3">
                                     <div className="text-[11px] text-green-600 font-medium">responseStatus</div>
-                                    <div className="text-sm font-bold text-green-900 mt-1">{latestAnalysis.responseStatus}</div>
+                                    <div className="text-sm font-bold text-green-900 mt-1 mobile-safe-text">{latestAnalysis.responseStatus}</div>
                                 </div>
                                 <div className="rounded-lg bg-red-50 border border-red-100 p-3">
                                     <div className="text-[11px] text-red-600 font-medium">escalationTriggered</div>
@@ -223,7 +223,7 @@ export default function ResponseTracking() {
                                 </div>
                                 <div className="rounded-lg bg-purple-50 border border-purple-100 p-3">
                                     <div className="text-[11px] text-purple-600 font-medium">nextDonorId</div>
-                                    <div className="text-sm font-bold text-purple-900 mt-1">{latestAnalysis.nextDonorId || 'none'}</div>
+                                    <div className="text-sm font-bold text-purple-900 mt-1 mobile-safe-text">{latestAnalysis.nextDonorId || 'none'}</div>
                                 </div>
                             </div>
                             <div className="rounded-lg bg-gray-50 border border-gray-100 p-3">
@@ -244,7 +244,7 @@ export default function ResponseTracking() {
             </div>
 
             {/* Status summary cards */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 {Object.entries(statusCounts).map(([status, count]) => (
                     <div key={status} className="bg-white rounded-xl border border-gray-100 shadow-sm p-3">
                         <div className="text-xs text-gray-500 mb-1">{status}</div>
@@ -260,7 +260,7 @@ export default function ResponseTracking() {
                 </h2>
                 <div className="flex flex-wrap gap-3">
                     {escalationRules.map((rule, i) => (
-                        <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 border border-gray-100 text-xs">
+                        <div key={i} className="flex flex-wrap items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 border border-gray-100 text-xs">
                             <span className="font-medium text-gray-600">IF</span>
                             <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">{rule.response}</span>
                             <span className="font-medium text-gray-600">→</span>
@@ -277,8 +277,41 @@ export default function ResponseTracking() {
                         Response Board
                     </h2>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                <div className="md:hidden p-4 space-y-3">
+                    {responses.map(r => (
+                        <div key={r.id} className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                    <div className="text-sm font-semibold text-gray-800 truncate">{r.donor_name}</div>
+                                    <div className="text-[11px] text-gray-500 font-mono truncate">{r.donor_id}</div>
+                                </div>
+                                <span className={`text-[10px] px-2.5 py-1 rounded-full font-medium ${statusColors[r.outreach_status]}`}>
+                                    {r.outreach_status}
+                                </span>
+                            </div>
+                            <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-600">
+                                <div><span className="text-gray-400">Request</span><div className="font-mono truncate">{r.request_id}</div></div>
+                                <div><span className="text-gray-400">Blood</span><div>{r.donor_blood_group}</div></div>
+                                <div><span className="text-gray-400">Intent</span><div className="mobile-safe-text">{r.ai_detected_intent}</div></div>
+                                <div><span className="text-gray-400">Escalation</span><div>{r.escalation_flag ? 'Escalated' : 'No'}</div></div>
+                            </div>
+                            <div className="mt-3 rounded-lg bg-white border border-gray-100 p-3 text-xs text-gray-700 mobile-safe-text">
+                                {r.ai_summary}
+                            </div>
+                            <div className="mt-3 flex flex-col xs:flex-row gap-2">
+                                {r.outreach_status !== 'Donor confirmed' && r.outreach_status !== 'Escalated' && (
+                                    <>
+                                        <button onClick={() => handleAction(r.id, 'confirm')} className="flex-1 min-h-9 text-xs px-2 py-2 rounded bg-green-50 text-green-700 hover:bg-green-100 transition">Confirm</button>
+                                        <button onClick={() => handleAction(r.id, 'decline')} className="flex-1 min-h-9 text-xs px-2 py-2 rounded bg-red-50 text-red-600 hover:bg-red-100 transition">Decline</button>
+                                        <button onClick={() => handleAction(r.id, 'followup')} className="flex-1 min-h-9 text-xs px-2 py-2 rounded bg-orange-50 text-orange-600 hover:bg-orange-100 transition">Follow-up</button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full text-sm min-w-[760px]">
                         <thead>
                             <tr className="text-left text-xs text-gray-500 bg-gray-50">
                                 <th className="px-5 py-3 font-medium">Request</th>
@@ -380,8 +413,8 @@ export default function ResponseTracking() {
             </div>
 
             {/* Safety footer */}
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
-                <Shield size={14} />
+            <div className="flex items-start gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
+                <Shield size={14} className="mt-0.5 flex-shrink-0" />
                 <span>Hemolytics assists with response understanding. Escalation decisions should be reviewed by authorized coordinators.</span>
             </div>
 
@@ -389,7 +422,7 @@ export default function ResponseTracking() {
                 <div className="flex justify-end">
                     <button
                         onClick={() => navigate('/impact-story')}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-medium hover:bg-[var(--brand-dark)] transition"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-medium hover:bg-[var(--brand-dark)] transition"
                     >
                         Create Impact Story <ArrowRight size={16} />
                     </button>

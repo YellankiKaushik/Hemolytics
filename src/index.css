@@ -29,6 +29,7 @@ body {
     background: var(--dashboard-bg);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
 h1,
@@ -42,6 +43,30 @@ h6 {
 
 #root {
     min-height: 100vh;
+    overflow-x: hidden;
+}
+
+html {
+    overflow-x: hidden;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+    touch-action: manipulation;
+}
+
+input,
+select,
+textarea {
+    max-width: 100%;
+}
+
+.mobile-safe-text {
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 /* Scrollbar */

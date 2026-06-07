@@ -70,7 +70,7 @@ export default function AiOutreach() {
     };
 
     return (
-        <div className="p-4 lg:p-6 space-y-5">
+        <div className="p-3 sm:p-4 lg:p-6 space-y-5">
             {/* Header */}
             <div>
                 <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Space Grotesk' }}>
@@ -84,14 +84,14 @@ export default function AiOutreach() {
             {/* Safety note */}
             <div className="flex items-start gap-2 px-4 py-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs">
                 <AlertTriangle size={14} />
-                <span>This generates coordinator-ready copy. It does not send WhatsApp automatically. Never make medical claims or certify donor health.</span>
+                <span className="mobile-safe-text">This generates coordinator-ready copy. It does not send WhatsApp automatically. Never make medical claims or certify donor health.</span>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                 {/* Left: Config */}
                 <div className="space-y-4">
                     {/* Request Summary */}
-                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
                         <h2 className="text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'Space Grotesk' }}>
                             Request Summary
                         </h2>
@@ -101,7 +101,7 @@ export default function AiOutreach() {
                                 <select
                                     value={selectedRequest.request_id}
                                     onChange={e => setSelectedRequest(bloodRequests.find(r => r.request_id === e.target.value) || bloodRequests[0])}
-                                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none transition"
+                                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none transition"
                                 >
                                     {bloodRequests.map(r => (
                                         <option key={r.request_id} value={r.request_id}>
@@ -120,7 +120,7 @@ export default function AiOutreach() {
                     </div>
 
                     {/* Donor Summary */}
-                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
                         <h2 className="text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'Space Grotesk' }}>
                             Selected Donor
                         </h2>
@@ -129,7 +129,7 @@ export default function AiOutreach() {
                             <select
                                 value={selectedDonor.user_id}
                                 onChange={e => setSelectedDonor(donors.find(d => d.user_id === e.target.value) || donors[0])}
-                                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none transition"
+                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none transition"
                             >
                                 {donors.filter(d => d.eligibility_status === 'eligible').map(d => (
                                     <option key={d.user_id} value={d.user_id}>
@@ -148,7 +148,7 @@ export default function AiOutreach() {
                     </div>
 
                     {/* Tone & Language */}
-                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
                         <h2 className="text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'Space Grotesk' }}>
                             Tone & Language
                         </h2>
@@ -160,7 +160,7 @@ export default function AiOutreach() {
                                         <button
                                             key={t}
                                             onClick={() => setTone(t)}
-                                            className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${tone === t
+                                            className={`min-h-9 px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${tone === t
                                                     ? 'bg-[var(--brand-primary)] text-white'
                                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                                 }`}
@@ -178,7 +178,7 @@ export default function AiOutreach() {
                                         <button
                                             key={l}
                                             onClick={() => setLanguage(l)}
-                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${language === l
+                                            className={`min-h-9 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${language === l
                                                     ? 'bg-blue-600 text-white'
                                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                                 }`}
@@ -221,7 +221,7 @@ export default function AiOutreach() {
                 {/* Right: Preview */}
                 <div className="lg:col-span-2 space-y-4">
                     {/* Persona badge */}
-                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-50 border border-purple-200">
+                    <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-purple-50 border border-purple-200">
                         <div className="w-10 h-10 rounded-full bg-purple-200 flex items-center justify-center text-sm font-bold text-purple-700">P</div>
                         <div>
                             <div className="text-sm font-semibold text-purple-800">Priya AI Coordinator</div>
@@ -230,32 +230,32 @@ export default function AiOutreach() {
                     </div>
 
                     {/* Message Preview */}
-                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
                         <h2 className="text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'Space Grotesk' }}>
                             AI-Generated Message Preview
                         </h2>
                         {generated ? (
-                            <div className="p-4 rounded-xl bg-green-50 border border-green-200 whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
+                            <div className="p-4 rounded-xl bg-green-50 border border-green-200 whitespace-pre-wrap text-sm text-gray-700 leading-relaxed mobile-safe-text">
                                 {generated.message}
                             </div>
                         ) : (
-                            <div className="p-8 rounded-xl bg-gray-50 border border-gray-100 text-center text-sm text-gray-400">
+                            <div className="p-6 sm:p-8 rounded-xl bg-gray-50 border border-gray-100 text-center text-sm text-gray-400">
                                 Click <strong>Generate Message</strong> to preview the AI-generated outreach
                             </div>
                         )}
 
                         {/* Action buttons */}
                         {generated && (
-                            <div className="flex items-center gap-2 mt-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-4">
                                 <button
                                     onClick={handleGenerate}
-                                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 text-gray-600 text-xs font-medium hover:bg-gray-200 transition"
+                                    className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-gray-100 text-gray-600 text-xs font-medium hover:bg-gray-200 transition"
                                 >
                                     <Bot size={14} /> Regenerate
                                 </button>
                                 <button
                                     onClick={handleCopy}
-                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition ${copied ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                                    className={`w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-medium transition ${copied ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
                                         }`}
                                 >
                                     {copied ? <><CheckCircle size={14} /> Copied</> : <><Copy size={14} /> Copy Message</>}
@@ -263,7 +263,7 @@ export default function AiOutreach() {
                                 <button
                                     onClick={handleSend}
                                     disabled={sent}
-                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition ${sent ? 'bg-green-600 text-white' : 'bg-[var(--brand-primary)] text-white hover:bg-[var(--brand-dark)]'
+                                    className={`w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-medium transition ${sent ? 'bg-green-600 text-white' : 'bg-[var(--brand-primary)] text-white hover:bg-[var(--brand-dark)]'
                                         }`}
                                 >
                                     {sent ? <><CheckCircle size={14} /> Marked as Sent</> : <><Send size={14} /> Mark as Sent</>}
@@ -274,7 +274,7 @@ export default function AiOutreach() {
 
                     {/* AI Model Details */}
                     {generated && (
-                        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
                             <h2 className="text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'Space Grotesk' }}>
                                 AI Model Details
                             </h2>
@@ -285,7 +285,7 @@ export default function AiOutreach() {
                                     `Conversation ID: ${generated.conversationId}`,
                                     `Safety: ${generated.safetyNotice}`,
                                 ].map((item, i) => (
-                                    <div key={i} className="flex items-center gap-2 text-xs text-gray-600 p-2 rounded-lg bg-gray-50">
+                                    <div key={i} className="flex items-start gap-2 text-xs text-gray-600 p-2 rounded-lg bg-gray-50 mobile-safe-text">
                                         <span className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-medium text-blue-600">{i + 1}</span>
                                         {item}
                                     </div>
@@ -303,8 +303,8 @@ export default function AiOutreach() {
             </div>
 
             {/* Safety footer */}
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
-                <Shield size={14} />
+            <div className="flex items-start gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
+                <Shield size={14} className="mt-0.5 flex-shrink-0" />
                 <span>Hemolytics does not certify donor health or blood safety. Outreach messages are AI-assisted suggestions only.</span>
             </div>
 
@@ -312,7 +312,7 @@ export default function AiOutreach() {
                 <div className="flex justify-end">
                     <button
                         onClick={() => navigate('/response-tracking')}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-medium hover:bg-[var(--brand-dark)] transition"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-medium hover:bg-[var(--brand-dark)] transition"
                     >
                         Track donor response <Send size={16} />
                     </button>

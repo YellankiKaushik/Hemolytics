@@ -74,7 +74,7 @@ export default function SmartMatch() {
     };
 
     return (
-        <div className="p-4 lg:p-6 space-y-5">
+        <div className="p-3 sm:p-4 lg:p-6 space-y-5">
             {/* Header */}
             <div>
                 <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Space Grotesk' }}>
@@ -86,19 +86,19 @@ export default function SmartMatch() {
             </div>
 
             {/* Safety note */}
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs">
-                <AlertTriangle size={14} />
+            <div className="flex items-start gap-2 px-4 py-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs">
+                <AlertTriangle size={14} className="mt-0.5 flex-shrink-0" />
                 <span>Prioritized for coordinator review, not medical approval. Hard filters include blood group match, eligible status, active status, and valid location.</span>
             </div>
 
             {/* Request Form */}
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-4">
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5 space-y-4">
                 <div className="flex items-center gap-2 mb-2">
                     <Search size={16} className="text-[var(--brand-primary)]" />
                     <h2 className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Space Grotesk' }}>Match Request</h2>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <div>
                         <label className="block text-xs text-gray-500 mb-1.5 font-medium">Request ID</label>
                         <input
@@ -193,8 +193,8 @@ export default function SmartMatch() {
                             'latitude/longitude valid',
                             'role usable as donor type',
                         ].map((filter, i) => (
-                            <span key={i} className="flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full bg-green-50 text-green-700 border border-green-200">
-                                <CheckCircle size={12} />
+                            <span key={i} className="flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full bg-green-50 text-green-700 border border-green-200 mobile-safe-text">
+                                <CheckCircle size={12} className="flex-shrink-0" />
                                 {filter}
                             </span>
                         ))}
@@ -214,15 +214,15 @@ export default function SmartMatch() {
                     {results.map((r) => (
                         <div
                             key={r.donor_id}
-                            className={`bg-white rounded-xl border shadow-sm p-5 transition-all ${r.match_score === 0
+                            className={`bg-white rounded-xl border shadow-sm p-4 sm:p-5 transition-all ${r.match_score === 0
                                     ? 'border-gray-100 opacity-60'
                                     : selectedDonor === r.donor_id
                                         ? 'border-green-300 ring-2 ring-green-100'
                                         : 'border-gray-100 hover:border-gray-200 hover:shadow-md'
                                 }`}
                         >
-                            <div className="flex items-start justify-between flex-wrap gap-3">
-                                <div className="flex items-start gap-3">
+                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                <div className="flex items-start gap-3 min-w-0">
                                     {/* Rank badge */}
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold ${r.rank === 1 ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
                                             r.rank === 2 ? 'bg-gray-100 text-gray-600 border border-gray-200' :
@@ -231,10 +231,10 @@ export default function SmartMatch() {
                                         }`} style={{ fontFamily: 'Space Grotesk' }}>
                                         #{r.rank}
                                     </div>
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-sm font-semibold text-gray-800">{r.donor_name}</span>
-                                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 font-mono">{r.donor_id}</span>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <span className="text-sm font-semibold text-gray-800 truncate max-w-full">{r.donor_name}</span>
+                                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 font-mono max-w-full truncate">{r.donor_id}</span>
                                             <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${r.confidence_label === 'High' ? 'bg-green-100 text-green-700' :
                                                     r.confidence_label === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
                                                         'bg-red-100 text-red-600'
@@ -242,7 +242,7 @@ export default function SmartMatch() {
                                                 {r.confidence_label} Confidence
                                             </span>
                                         </div>
-                                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-500">
                                             <span>{r.blood_group}</span>
                                             <span>•</span>
                                             <span>{r.role}</span>
@@ -251,10 +251,10 @@ export default function SmartMatch() {
                                             <span>•</span>
                                             <span>{r.donations_till_date} donations</span>
                                         </div>
-                                        <div className="mt-1.5 text-xs text-gray-400">{r.reason}</div>
+                                        <div className="mt-1.5 text-xs text-gray-400 mobile-safe-text">{r.reason}</div>
                                     </div>
                                 </div>
-                                <div className="text-right">
+                                <div className="sm:text-right flex sm:block items-end justify-between gap-3">
                                     <div className="text-2xl font-bold text-gray-800" style={{ fontFamily: 'Space Grotesk' }}>
                                         {r.match_score > 0 ? r.match_score : '—'}
                                     </div>
@@ -284,7 +284,7 @@ export default function SmartMatch() {
                             {r.match_score > 0 && r.recommended_action && (
                                 <div className="mt-3 flex items-start gap-2 px-3 py-2 rounded-lg bg-blue-50 border border-blue-100">
                                     <Target size={13} className="text-blue-500 mt-0.5 flex-shrink-0" />
-                                    <span className="text-[11px] text-blue-700">{r.recommended_action}</span>
+                                    <span className="text-[11px] text-blue-700 mobile-safe-text">{r.recommended_action}</span>
                                 </div>
                             )}
 
@@ -293,7 +293,7 @@ export default function SmartMatch() {
                                 <div className="mt-3 flex justify-end">
                                     <button
                                         onClick={() => handleSelectDonor(r.donor_id)}
-                                        className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium transition ${selectedDonor === r.donor_id
+                                        className={`w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-medium transition ${selectedDonor === r.donor_id
                                                 ? 'bg-green-600 text-white'
                                                 : 'bg-[var(--brand-primary)] text-white hover:bg-[var(--brand-dark)]'
                                             }`}
@@ -324,7 +324,7 @@ export default function SmartMatch() {
                     </div>
                     <button
                         onClick={() => navigate('/ai-outreach')}
-                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition"
+                        className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition"
                     >
                         Generate Outreach <ArrowRight size={16} />
                     </button>
@@ -342,15 +342,15 @@ export default function SmartMatch() {
 
             {/* Empty state */}
             {!showResults && !loading && (
-                <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
+                <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 sm:p-12 text-center">
                     <Search size={40} className="mx-auto text-gray-300 mb-3" />
                     <p className="text-sm text-gray-500">Configure the match request and click <strong>Run SmartMatch</strong> to rank donors</p>
                 </div>
             )}
 
             {/* Safety footer */}
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
-                <Shield size={14} />
+            <div className="flex items-start gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
+                <Shield size={14} className="mt-0.5 flex-shrink-0" />
                 <span>Hemolytics does not certify donor health or blood safety. Final decisions remain with authorized human/medical staff.</span>
             </div>
         </div>

@@ -26,7 +26,7 @@ function MetricBlock({ title, subtitle, icon: Icon, tone, metrics }: {
     metrics: { label: string; value: string | number; helper?: string }[];
 }) {
     return (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
             <div className="flex items-start gap-3 mb-4">
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${tone}`}>
                     <Icon size={19} />
@@ -36,9 +36,9 @@ function MetricBlock({ title, subtitle, icon: Icon, tone, metrics }: {
                     <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>
                 </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
                 {metrics.map(item => (
-                    <div key={item.label} className="rounded-lg bg-gray-50 border border-gray-100 p-3">
+                    <div key={item.label} className="rounded-lg bg-gray-50 border border-gray-100 p-3 min-w-0">
                         <div className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Space Grotesk' }}>{item.value}</div>
                         <div className="text-[11px] text-gray-500 mt-0.5">{item.label}</div>
                         {item.helper && <div className="text-[10px] text-gray-400 mt-1">{item.helper}</div>}
@@ -107,20 +107,20 @@ export default function Dashboard() {
     const activity = (m.recentActivity as { time: string; event: string; type: string }[]) || [];
 
     return (
-        <div className="p-4 lg:p-6 space-y-5">
+        <div className="p-3 sm:p-4 lg:p-6 space-y-5">
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Space Grotesk' }}>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900" style={{ fontFamily: 'Space Grotesk' }}>
                         Donor Intelligence Dashboard
                     </h1>
                     <p className="text-sm text-gray-500 mt-1 max-w-2xl">
                         A fast coordinator view of donor network readiness, dataset quality, active requests, and re-engagement opportunities.
                     </p>
-                    <p className="text-xs text-blue-700 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 mt-3 inline-flex">
+                    <p className="text-xs text-blue-700 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 mt-3 inline-flex leading-relaxed">
                         Dashboard uses a fast sample of donor records for demo-speed analytics.
                     </p>
                 </div>
-                <button onClick={() => navigate('/smartmatch')} className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-medium hover:bg-[var(--brand-dark)] transition">
+                <button onClick={() => navigate('/smartmatch')} className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-medium hover:bg-[var(--brand-dark)] transition">
                     Run SmartMatch <ArrowRight size={16} />
                 </button>
             </div>
@@ -183,7 +183,7 @@ export default function Dashboard() {
                         {bgDist.slice(0, 8).map(bg => {
                             const pct = Math.max(4, Math.round((bg.count / Math.max(donorLikeUsers, 1)) * 100));
                             return (
-                                <div key={bg.group} className="flex items-center gap-3">
+                                <div key={bg.group} className="flex items-center gap-2 sm:gap-3 min-w-0">
                                     <span className="text-xs text-gray-600 w-24 truncate">{bg.group}</span>
                                     <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
                                         <div className="h-full bg-[var(--brand-primary)] rounded-full" style={{ width: `${pct}%` }} />
@@ -213,11 +213,11 @@ export default function Dashboard() {
                     <h2 className="text-sm font-semibold text-gray-800 mb-3" style={{ fontFamily: 'Space Grotesk' }}>Recent System Activity</h2>
                     <div className="space-y-2">
                         {activity.slice(0, 5).map((item, i) => (
-                            <div key={`${item.event}-${i}`} className="flex items-center gap-2 p-2.5 rounded-lg bg-gray-50">
+                            <div key={`${item.event}-${i}`} className="flex items-start sm:items-center gap-2 p-2.5 rounded-lg bg-gray-50">
                                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${activityTypeColors[item.type] || 'bg-gray-100 text-gray-600'}`}>
                                     {item.type}
                                 </span>
-                                <span className="text-xs text-gray-600 flex-1">{item.event}</span>
+                                <span className="text-xs text-gray-600 flex-1 mobile-safe-text">{item.event}</span>
                             </div>
                         ))}
                     </div>
@@ -225,12 +225,12 @@ export default function Dashboard() {
             </div>
 
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-                <div className="flex items-center justify-between gap-3 mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                     <div>
                         <h2 className="text-sm font-semibold text-gray-800" style={{ fontFamily: 'Space Grotesk' }}>Top Eligible Donor Pool</h2>
                         <p className="text-xs text-gray-500 mt-0.5">A small preview for coordinator review. Open SmartMatch for ranking.</p>
                     </div>
-                    <button onClick={() => navigate('/smartmatch')} className="text-xs text-[var(--brand-primary)] hover:underline">Open SmartMatch</button>
+                    <button onClick={() => navigate('/smartmatch')} className="w-full sm:w-auto text-left sm:text-right text-xs text-[var(--brand-primary)] hover:underline">Open SmartMatch</button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
                     {topPool.length > 0 ? topPool.map((donor, index) => (
@@ -259,7 +259,7 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
+            <div className="flex items-start gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
                 <Shield size={14} />
                 <span>Hemolytics assists with donor prioritization. Final decisions remain with authorized human/medical staff.</span>
             </div>

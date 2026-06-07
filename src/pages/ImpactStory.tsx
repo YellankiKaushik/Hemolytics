@@ -66,7 +66,7 @@ export default function ImpactStory() {
     };
 
     return (
-        <div className="p-4 lg:p-6 space-y-5">
+        <div className="p-3 sm:p-4 lg:p-6 space-y-5">
             {/* Header */}
             <div>
                 <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Space Grotesk' }}>
@@ -90,12 +90,12 @@ export default function ImpactStory() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                 {/* Input Form */}
                 <div className="space-y-4">
-                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
                         <h2 className="text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'Space Grotesk' }}>
                             Campaign Inputs
                         </h2>
                         <div className="space-y-3">
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-xs text-gray-500 mb-1 font-medium">Donors Contacted</label>
                                     <input type="number" value={donorsContacted} onChange={e => setDonorsContacted(Number(e.target.value))} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-red-200 focus:border-red-300 outline-none transition" />
@@ -129,7 +129,7 @@ export default function ImpactStory() {
                     </div>
 
                     {/* Tone selector */}
-                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
                         <h2 className="text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'Space Grotesk' }}>
                             Content Tone
                         </h2>
@@ -138,7 +138,7 @@ export default function ImpactStory() {
                                 <button
                                     key={t.value}
                                     onClick={() => setTone(t.value)}
-                                    className={`w-full text-left p-3 rounded-lg border transition ${tone === t.value
+                                    className={`w-full min-h-12 text-left p-3 rounded-lg border transition ${tone === t.value
                                             ? 'bg-[var(--brand-primary)] bg-opacity-5 border-[var(--brand-primary)] text-gray-800'
                                             : 'border-gray-100 hover:border-gray-200 text-gray-600'
                                         }`}
@@ -184,55 +184,55 @@ export default function ImpactStory() {
                     {generated ? (
                         <>
                             {/* Awareness Message */}
-                            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-                                <div className="flex items-center justify-between mb-3">
+                            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
+                                <div className="flex items-center justify-between gap-3 mb-3">
                                     <h2 className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Space Grotesk' }}>
                                         Awareness Message
                                     </h2>
-                                    <button onClick={() => handleCopy(generated.awarenessMessage, 'awareness')} className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                                    <button onClick={() => handleCopy(generated.awarenessMessage, 'awareness')} className="min-h-8 flex items-center gap-1 text-xs text-blue-600 hover:underline">
                                         {copiedField === 'awareness' ? <><CheckCircle size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
                                     </button>
                                 </div>
-                                <div className="p-4 rounded-xl bg-blue-50 border border-blue-100 whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
+                                <div className="p-4 rounded-xl bg-blue-50 border border-blue-100 whitespace-pre-wrap text-sm text-gray-700 leading-relaxed mobile-safe-text">
                                     {generated.awarenessMessage}
                                 </div>
                             </div>
 
                             {/* Social Post */}
-                            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-                                <div className="flex items-center justify-between mb-3">
+                            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
+                                <div className="flex items-center justify-between gap-3 mb-3">
                                     <h2 className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Space Grotesk' }}>
                                         Social Post Style
                                     </h2>
-                                    <button onClick={() => handleCopy(generated.socialPost, 'social')} className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                                    <button onClick={() => handleCopy(generated.socialPost, 'social')} className="min-h-8 flex items-center gap-1 text-xs text-blue-600 hover:underline">
                                         {copiedField === 'social' ? <><CheckCircle size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
                                     </button>
                                 </div>
-                                <div className="p-4 rounded-xl bg-purple-50 border border-purple-100 whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
+                                <div className="p-4 rounded-xl bg-purple-50 border border-purple-100 whitespace-pre-wrap text-sm text-gray-700 leading-relaxed mobile-safe-text">
                                     {generated.socialPost}
                                 </div>
                             </div>
 
                             {/* Coordinator Summary */}
-                            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-                                <div className="flex items-center justify-between mb-3">
+                            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
+                                <div className="flex items-center justify-between gap-3 mb-3">
                                     <h2 className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Space Grotesk' }}>
                                         Coordinator Summary
                                     </h2>
-                                    <button onClick={() => handleCopy(generated.coordinatorSummary, 'coordinator')} className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                                    <button onClick={() => handleCopy(generated.coordinatorSummary, 'coordinator')} className="min-h-8 flex items-center gap-1 text-xs text-blue-600 hover:underline">
                                         {copiedField === 'coordinator' ? <><CheckCircle size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
                                     </button>
                                 </div>
-                                <div className="p-4 rounded-xl bg-green-50 border border-green-100 whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
+                                <div className="p-4 rounded-xl bg-green-50 border border-green-100 whitespace-pre-wrap text-sm text-gray-700 leading-relaxed mobile-safe-text">
                                     {generated.coordinatorSummary}
                                 </div>
                             </div>
 
-                            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
                                 <h2 className="text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'Space Grotesk' }}>
                                     Safety Notice
                                 </h2>
-                                <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 text-sm text-amber-800 leading-relaxed">
+                                <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 text-sm text-amber-800 leading-relaxed mobile-safe-text">
                                     {generated.safetyNotice}
                                 </div>
                                 {generated.fallback_used && (
@@ -244,12 +244,12 @@ export default function ImpactStory() {
                             </div>
                         </>
                     ) : loading ? (
-                        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
+                        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 sm:p-12 text-center">
                             <Loader2 size={40} className="mx-auto text-[var(--brand-primary)] animate-spin mb-3" />
                             <p className="text-sm text-gray-500">Generating safe awareness content...</p>
                         </div>
                     ) : (
-                        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
+                        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 sm:p-12 text-center">
                             <Heart size={40} className="mx-auto text-gray-300 mb-3" />
                             <p className="text-sm text-gray-500">Configure inputs and click <strong>Generate Impact Content</strong> to create safe awareness messages</p>
                         </div>
@@ -258,8 +258,8 @@ export default function ImpactStory() {
             </div>
 
             {/* Safety footer */}
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
-                <Shield size={14} />
+            <div className="flex items-start gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
+                <Shield size={14} className="mt-0.5 flex-shrink-0" />
                 <span>All generated content follows safe messaging rules. No patient PII. No medical claims. No guaranteed survival statements.</span>
             </div>
 
@@ -267,7 +267,7 @@ export default function ImpactStory() {
                 <div className="flex justify-end">
                     <button
                         onClick={() => navigate('/api-settings')}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition"
                     >
                         View API Settings / Final Demo <CheckCircle size={16} />
                     </button>

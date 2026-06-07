@@ -39,7 +39,7 @@ export default function ApiSettings() {
     const ModeIcon = IS_AWS_CONNECTED ? Wifi : WifiOff;
 
     return (
-        <div className="p-4 lg:p-6 space-y-5">
+        <div className="p-3 sm:p-4 lg:p-6 space-y-5">
             <div>
                 <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Space Grotesk' }}>
                     AWS Connection & Backend Contract
@@ -49,8 +49,8 @@ export default function ApiSettings() {
                 </p>
             </div>
 
-            <div className={`flex items-center gap-4 p-4 rounded-xl border ${modeColor}`}>
-                <ModeIcon size={20} />
+            <div className={`flex items-start sm:items-center gap-3 sm:gap-4 p-4 rounded-xl border ${modeColor}`}>
+                <ModeIcon size={20} className="mt-0.5 sm:mt-0 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                     <div className="text-sm font-semibold">Current Mode: {modeLabel}</div>
                     <div className="text-xs mt-0.5 opacity-75 break-all">
@@ -88,7 +88,7 @@ export default function ApiSettings() {
                 <p className="text-xs text-gray-500 mb-2">
                     Amplify should set <code className="bg-gray-100 px-1 rounded font-mono">VITE_API_BASE_URL</code> to the live API Gateway URL:
                 </p>
-                <pre className="bg-gray-900 text-green-400 text-xs font-mono p-3 rounded-lg overflow-x-auto">
+                <pre className="bg-gray-900 text-green-400 text-xs font-mono p-3 rounded-lg overflow-x-auto mobile-safe-text">
                     VITE_API_BASE_URL=https://w1nxgpj5ng.execute-api.us-east-1.amazonaws.com/Prod
                 </pre>
                 <p className="text-xs text-gray-400 mt-2">
@@ -100,7 +100,7 @@ export default function ApiSettings() {
                 <h2 className="text-sm font-semibold text-gray-700 mb-4" style={{ fontFamily: 'Space Grotesk' }}>
                     AWS Architecture
                 </h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
                     {[
                         { icon: Globe, label: 'React + Vite\nTailwind CSS', color: 'text-blue-600 bg-blue-50' },
                         { icon: Cloud, label: 'Amplify / S3', color: 'text-orange-600 bg-orange-50' },
@@ -118,8 +118,8 @@ export default function ApiSettings() {
                         </div>
                     ))}
                 </div>
-                <div className="mt-4 flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 text-xs text-gray-500">
-                    <Shield size={14} />
+                <div className="mt-4 flex items-start gap-2 px-3 py-2 rounded-lg bg-gray-50 text-xs text-gray-500">
+                    <Shield size={14} className="mt-0.5 flex-shrink-0" />
                     <span>React + Amplify/S3 -&gt; API Gateway -&gt; Lambda -&gt; DynamoDB -&gt; Bedrock -&gt; S3 -&gt; CloudWatch</span>
                 </div>
             </div>
@@ -130,8 +130,21 @@ export default function ApiSettings() {
                         API Endpoints
                     </h2>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                <div className="sm:hidden p-4 space-y-3">
+                    {endpoints.map(ep => (
+                        <div key={ep.path} className="rounded-xl bg-gray-50 border border-gray-100 p-3">
+                            <div className="flex items-center justify-between gap-3">
+                                <span className={`text-[10px] px-2 py-0.5 rounded font-mono font-medium ${methodColors[ep.method]}`}>
+                                    {ep.method}
+                                </span>
+                                <span className="font-mono text-xs text-gray-700 mobile-safe-text text-right">{ep.path}</span>
+                            </div>
+                            <div className="text-xs text-gray-600 mt-2 mobile-safe-text">{ep.description}</div>
+                        </div>
+                    ))}
+                </div>
+                <div className="hidden sm:block overflow-x-auto">
+                    <table className="w-full text-sm min-w-[620px]">
                         <thead>
                             <tr className="text-left text-xs text-gray-500 bg-gray-50">
                                 <th className="px-5 py-3 font-medium">Method</th>
@@ -167,8 +180,8 @@ export default function ApiSettings() {
                                 <Database size={18} className="text-indigo-600" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <div className="text-sm font-mono font-medium text-gray-800">{table.name}</div>
-                                <div className="text-xs text-gray-500 mt-0.5">{table.description}</div>
+                                <div className="text-sm font-mono font-medium text-gray-800 mobile-safe-text">{table.name}</div>
+                                <div className="text-xs text-gray-500 mt-0.5 mobile-safe-text">{table.description}</div>
                                 <div className="text-[11px] text-gray-400 mt-0.5">Partition key: <span className="font-mono">{table.key}</span></div>
                             </div>
                         </div>
@@ -188,7 +201,7 @@ export default function ApiSettings() {
                         </div>
                         <div className="space-y-1 text-xs text-red-700">
                             <div><strong>Model:</strong> Claude 3 Haiku</div>
-                            <div className="font-mono text-[11px] break-all">{BEDROCK_MODEL_ID}</div>
+                            <div className="font-mono text-[11px] break-all mobile-safe-text">{BEDROCK_MODEL_ID}</div>
                             <div className="mt-2 text-[11px] text-red-600">Used for: outreach generation and impact content.</div>
                         </div>
                     </div>
@@ -220,8 +233,8 @@ export default function ApiSettings() {
                 </ul>
             </div>
 
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
-                <Shield size={14} />
+            <div className="flex items-start gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-500 text-xs">
+                <Shield size={14} className="mt-0.5 flex-shrink-0" />
                 <span>Hemolytics prototype architecture. Backend targets AWS API Gateway -&gt; Lambda -&gt; DynamoDB -&gt; Bedrock. Currently running in {modeLabel}.</span>
             </div>
         </div>

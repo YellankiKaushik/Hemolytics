@@ -5,6 +5,7 @@ import {
     Activity, AlertTriangle, ArrowRight, Database, Droplets,
     Loader2, MapPin, RefreshCw, Shield, UserCheck, Users
 } from 'lucide-react';
+import ImpactSnapshot from '../components/ImpactSnapshot';
 
 const activityTypeColors: Record<string, string> = {
     confirmed: 'bg-green-100 text-green-700',
@@ -124,6 +125,23 @@ export default function Dashboard() {
                     Run SmartMatch <ArrowRight size={16} />
                 </button>
             </div>
+
+            <ImpactSnapshot
+                variant="compact"
+                metrics={{
+                    recordsProcessed: 7033,
+                    uniqueRecords: 6946,
+                    requestRecords: 786,
+                    duplicateGroupsHandled: 87,
+                    invalidBloodGroupsFlagged: missingBloodGroup || 2036,
+                    missingLocationFlagged: missingLocation || 24,
+                    sampledRecords,
+                    activeDonors: activeDonors || 905,
+                    activeRequests: activeBridge || 500,
+                    donorProfilesPrioritized: 'Top 5',
+                }}
+                contextNote={`Dashboard is in ${dashboardMode} mode and uses live sampled values where available.`}
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                 <MetricBlock

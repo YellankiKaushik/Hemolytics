@@ -4,6 +4,7 @@ import {
     ArrowRight, Bot, Database, Gauge, HeartPulse, MessageSquare,
     ShieldCheck, Sparkles, Users, Activity, Megaphone, Wifi
 } from 'lucide-react';
+import ImpactSnapshot from '../components/ImpactSnapshot';
 
 const workflow = [
     { label: 'Dataset', icon: Database, desc: 'Load donor and request records' },
@@ -131,6 +132,11 @@ export default function Landing() {
                         ))}
                     </div>
                 </div>
+
+                <ImpactSnapshot
+                    className="mt-5"
+                    contextNote="Fallback values reflect the latest verified dataset load summary when live page data has not been loaded yet."
+                />
 
                 <div className="mt-5 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
                     <h2 className="text-sm font-bold text-gray-900 mb-1" style={{ fontFamily: 'Space Grotesk' }}>Future production roadmap</h2>

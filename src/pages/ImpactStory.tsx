@@ -5,6 +5,7 @@ import { generateImpactStory } from '../services/api';
 import {
     Heart, AlertTriangle, Shield, Copy, CheckCircle, Loader2
 } from 'lucide-react';
+import ImpactSnapshot from '../components/ImpactSnapshot';
 
 const tones: { value: ImpactTone; label: string; desc: string }[] = [
     { value: 'awareness', label: 'Awareness', desc: 'Public awareness about blood donation need' },
@@ -85,6 +86,32 @@ export default function ImpactStory() {
                     <div>No patient PII • No fake medical claims • No guaranteed survival claims</div>
                     <div>No claim that donation happened unless clearly simulated/demo</div>
                 </div>
+            </div>
+
+            <div className="space-y-3">
+                <div>
+                    <h2 className="text-sm font-semibold text-gray-800" style={{ fontFamily: 'Space Grotesk' }}>
+                        Coordination Impact Summary
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-1">
+                        Shows how outreach activity becomes safe awareness messaging without patient PII or medical outcome claims.
+                    </p>
+                </div>
+                <ImpactSnapshot
+                    variant="compact"
+                    metrics={{
+                        recordsProcessed: 7033,
+                        uniqueRecords: 6946,
+                        requestRecords: 786,
+                        duplicateGroupsHandled: 87,
+                        invalidBloodGroupsFlagged: 2036,
+                        missingLocationFlagged: 24,
+                        donorProfilesPrioritized: potentialMatches > 0 ? potentialMatches : 'Top 5',
+                        responsesClassified: responsesReceived,
+                        coordinatorTimeSaved: donorsContacted > 0 ? `${donorsContacted} contacted` : 'Estimated',
+                    }}
+                    contextNote={`${donorsContacted} donors contacted, ${responsesReceived} responses received, and ${potentialMatches} potential matches are converted into safe awareness messaging. No patient PII, no medical outcome claims.`}
+                />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">

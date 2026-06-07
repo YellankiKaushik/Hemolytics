@@ -1,9 +1,8 @@
 node_modules/
 dist/
 
-.env
-.env.local
-.env.production
+.env*
+!.env.example
 
 .aws-sam/
 backend/.aws-sam/
@@ -20,6 +19,7 @@ Dataset.csv
 
 credentials
 *credentials*
+aws credentials
 .aws/
 
 .DS_Store

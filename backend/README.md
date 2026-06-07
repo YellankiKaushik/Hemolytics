@@ -118,7 +118,7 @@ Run a sample Lambda proxy event:
 python backend/scripts/run_local_handler.py handlers.health backend/events/health_event.json
 ```
 
-Handlers that call DynamoDB/S3/Bedrock require AWS credentials and deployed resources unless mocked. Bedrock-backed generation includes safe fallback behavior if Bedrock is unavailable.
+Handlers that call DynamoDB/S3/Bedrock require AWS credentials and deployed resources unless mocked. Bedrock-backed AI Outreach and Impact Story generation include safe fallback behavior if Bedrock is unavailable or if the selected model is restricted by account/model permissions.
 
 ## Package Lambda Source
 

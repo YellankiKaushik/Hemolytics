@@ -1,24 +1,57 @@
 # Hemolytics
 
-Hemolytics is an AWS serverless MVP for blood donation coordination. It helps coordinators ingest donor/request data, view dashboard metrics, run SmartMatch prioritization, generate safe outreach, classify donor responses, and create anonymized awareness messages.
+Hemolytics is an AI-powered blood donation coordination platform built for Blood Warriors and the AI for Good Hackathon. It helps coordinators load donor/request data, understand dataset readiness, prioritize donor outreach, classify responses, handle escalation, and generate safe anonymized awareness content.
+
+## Live Links
+
+- Frontend: https://main.d2sj4v5ffjc9ah.amplifyapp.com
+- Backend API: https://w1nxgpj5ng.execute-api.us-east-1.amazonaws.com/Prod
+- GitHub: https://github.com/YellankiKaushik/Hemolytics
 
 ## Architecture
 
-- Frontend: React + Vite + Tailwind
-- Backend: API Gateway + Lambda + DynamoDB + AWS Bedrock Claude 3 Haiku + S3 + CloudWatch
-- Frontend hosting: AWS Amplify Hosting or S3 static hosting
-- Backend deployment: AWS SAM
+- Frontend: React + Vite + Tailwind, hosted on AWS Amplify
+- Backend: Amazon API Gateway + AWS Lambda
+- Data store: Amazon DynamoDB
+- Dataset storage: Amazon S3 dataset bucket with `Dataset.csv`
+- AI: AWS Bedrock Claude Haiku with safe fallback behavior
+- Observability: Amazon CloudWatch Logs
 
-Live backend API:
+The backend intentionally avoids PostgreSQL/RDS as primary storage, Redis, FastAPI as the primary backend, App Runner as the default runtime, mandatory Docker/ECR, direct Anthropic API calls, direct OpenAI API calls, production WhatsApp API, SageMaker pipelines, and a full community platform.
+
+## Core Features
+
+- Dataset ingestion from S3 into DynamoDB
+- Dashboard metrics for donor network, data quality, requests, and re-engagement
+- SmartMatch donor prioritization for coordinator review
+- AI Outreach message drafting through AWS Bedrock
+- Response Tracking with donor intent classification and escalation status
+- Impact Story generation for anonymized awareness messaging
+- API Settings / AWS visibility page for demo transparency
+
+## Dataset Load Stats
+
+Latest successful dataset load:
+
+- 7,033 rows loaded
+- 6,946 unique users
+- 786 request records
+- 87 duplicate user groups handled
+- 2,036 invalid/unknown blood groups flagged
+- 24 missing locations flagged
+
+## Safety Statement
+
+Hemolytics does not certify donor health, donor eligibility, or blood safety. It assists coordinators with prioritization, outreach, response understanding, and awareness messaging. Final decisions remain with authorized human/medical staff.
+
+## Bedrock Fallback Note
+
+AI Outreach and Impact Story are wired through AWS Bedrock with safe fallback behavior. If a selected model is restricted by AWS account/model permissions, the app returns safe coordinator-ready fallback output instead of failing.
+
+Current backend configuration uses an active Claude Haiku model ID:
 
 ```text
-https://w1nxgpj5ng.execute-api.us-east-1.amazonaws.com/Prod
-```
-
-For production hosting, set this through environment variables instead of hardcoding it in source:
-
-```text
-VITE_API_BASE_URL=https://w1nxgpj5ng.execute-api.us-east-1.amazonaws.com/Prod
+anthropic.claude-3-5-haiku-20241022-v1:0
 ```
 
 ## Run Locally
@@ -29,7 +62,7 @@ Install dependencies:
 npm install
 ```
 
-Run the frontend locally:
+Run the frontend:
 
 ```bash
 npm run dev
@@ -37,38 +70,30 @@ npm run dev
 
 Without `VITE_API_BASE_URL`, the frontend runs in Mock Mode. With `VITE_API_BASE_URL`, it calls the deployed AWS backend.
 
-## Build Frontend
+## Frontend Build
 
-Create a local environment file only on your machine:
-
-```text
-.env.production
-```
-
-Add:
+Set the backend URL only in your local or Amplify environment, not in committed source files:
 
 ```text
 VITE_API_BASE_URL=https://w1nxgpj5ng.execute-api.us-east-1.amazonaws.com/Prod
 ```
 
-Then build:
+Build:
 
 ```bash
 npm run build
 ```
 
-Do not commit `.env.production`.
+## Backend Deployment
 
-## Deploy Backend With SAM
-
-The backend remains separate from Amplify and is deployed through SAM/API Gateway.
+The backend is deployed separately with AWS SAM.
 
 Prerequisites:
 
 - AWS CLI configured
 - AWS SAM CLI installed
 - Region: `us-east-1`
-- Bedrock model access enabled for `anthropic.claude-3-haiku-20240307-v1:0`
+- Bedrock model access enabled for Claude Haiku in AWS Bedrock
 
 Deploy:
 
@@ -88,32 +113,39 @@ Test the API:
 python backend/scripts/test_api_endpoints.py <ApiUrl from SAM output>
 ```
 
-## Deploy Frontend With Amplify
+## Frontend Deployment
 
-1. Push this repo to GitHub.
-2. Open AWS Console -> Amplify.
-3. Choose New app -> Host web app.
-4. Choose GitHub.
-5. Select `YellankiKaushik/Hemolytics`.
-6. Select branch `main`.
-7. Add environment variable:
+AWS Amplify Hosting is configured through `amplify.yml`.
+
+1. Connect this GitHub repository to Amplify.
+2. Select branch `main`.
+3. Add environment variable:
 
 ```text
 VITE_API_BASE_URL=https://w1nxgpj5ng.execute-api.us-east-1.amazonaws.com/Prod
 ```
 
-8. Use the included `amplify.yml` build settings.
-9. Deploy.
+4. Deploy.
 
-## Safety Note
+## Production Roadmap
 
-Hemolytics does not certify donor health, donor eligibility, or blood safety. It assists coordinators with prioritization, outreach, response understanding, and awareness messaging. Final decisions remain with authorized human and medical staff.
+- WhatsApp Business API integration
+- Patient/coordinator notifications
+- Donor mobile experience
+- Emergency broadcast workflow
+- Community awareness campaigns
+- Role-based access and audit approvals
+- DynamoDB GSI optimization
+- Background jobs and escalation workflows
 
-## Data And Secrets
+## Repository Hygiene
 
 Do not commit:
 
 - AWS credentials
 - `.env` files with real values
 - `Dataset.csv` if it contains real or sensitive rows
-- build artifacts such as `dist/`
+- `node_modules/`
+- `dist/`
+- SAM build artifacts
+- zip packages

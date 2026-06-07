@@ -4,7 +4,7 @@ AWS serverless backend for the Hemolytics MVP. It supports the completed React +
 
 ## Architecture
 
-React + Vite + Tailwind frontend -> Amplify or S3 -> API Gateway -> Lambda -> DynamoDB -> AWS Bedrock Claude 3 Haiku -> S3 -> CloudWatch.
+React + Vite + Tailwind frontend -> Amplify or S3 -> API Gateway -> Lambda -> DynamoDB -> AWS Bedrock Claude 3.5 Haiku -> S3 -> CloudWatch.
 
 This backend intentionally avoids PostgreSQL/RDS as primary storage, Redis, FastAPI as the primary backend, App Runner as the default runtime, mandatory Docker/ECR, direct Anthropic API calls, direct OpenAI API calls, production WhatsApp API, SageMaker pipelines, a full community platform, and mandatory crisis simulation flows.
 
@@ -14,7 +14,7 @@ This backend intentionally avoids PostgreSQL/RDS as primary storage, Redis, Fast
 - AWS SAM CLI installed.
 - Python 3.11 available locally.
 - AWS region `us-east-1`.
-- Bedrock model access enabled for `anthropic.claude-3-haiku-20240307-v1:0` in `us-east-1`.
+- Bedrock model access enabled for `anthropic.claude-3-5-haiku-20241022-v1:0` in `us-east-1`.
 
 ## Folder Structure
 
@@ -52,7 +52,8 @@ SAM configures the Lambda functions with:
 
 ```text
 AWS_BEDROCK_REGION=us-east-1
-AWS_BEDROCK_MODEL_ID=anthropic.claude-3-haiku-20240307-v1:0
+AWS_BEDROCK_MODEL_ID=anthropic.claude-3-5-haiku-20241022-v1:0
+AWS_BEDROCK_FALLBACK_MODEL_ID=anthropic.claude-3-5-haiku-20241022-v1:0
 DYNAMODB_DONORS_TABLE=HemolyticsDonors
 DYNAMODB_REQUESTS_TABLE=HemolyticsRequests
 DYNAMODB_CONVERSATIONS_TABLE=HemolyticsConversations
@@ -186,7 +187,7 @@ Then rebuild/redeploy the frontend through Amplify or S3.
 ## AWS Deployment Assumptions
 
 - API Gateway uses Lambda proxy integration.
-- IAM permissions are kept simple for hackathon use: DynamoDB read/write to the four tables, S3 get/put/list for the dataset bucket, Bedrock `InvokeModel` for Claude 3 Haiku, and CloudWatch logs.
+- IAM permissions are kept simple for hackathon use: DynamoDB read/write to the four tables, S3 get/put/list for the dataset bucket, Bedrock `InvokeModel` for Claude 3.5 Haiku, and CloudWatch logs.
 - The SAM template creates the dataset bucket. Leave `DatasetBucketName` blank for a generated account/region-specific name, or provide a globally unique custom bucket name.
 
 ## Safety Limitations

@@ -5,7 +5,8 @@ from services.common import SAFETY_NOTICE, get_env, normalize_string
 
 
 BEDROCK_REGION = get_env("AWS_BEDROCK_REGION", "us-east-1")
-MODEL_ID = get_env("AWS_BEDROCK_MODEL_ID", "anthropic.claude-3-haiku-20240307-v1:0")
+MODEL_ID = get_env("AWS_BEDROCK_MODEL_ID", "anthropic.claude-3-5-haiku-20241022-v1:0")
+FALLBACK_MODEL_ID = get_env("AWS_BEDROCK_FALLBACK_MODEL_ID", "anthropic.claude-3-5-haiku-20241022-v1:0")
 PROVIDER = "AWS Bedrock"
 
 PRIYA_SYSTEM_PROMPT = (
@@ -25,23 +26,32 @@ def _bedrock_error_type(exc: Exception) -> str:
     return exc.__class__.__name__
 
 
-def _log_bedrock_error(exc: Exception) -> None:
+def _model_candidates() -> List[str]:
+    candidates = [MODEL_ID, FALLBACK_MODEL_ID]
+    unique = []
+    for model_id in candidates:
+        if model_id and model_id not in unique:
+            unique.append(model_id)
+    return unique
+
+
+def _log_bedrock_error(exc: Exception, model_id: str, application_fallback_used: bool) -> None:
     print(
         "BEDROCK_INVOKE_ERROR: "
         f"{_bedrock_error_type(exc)}: {str(exc)} | "
-        f"model_id={MODEL_ID} | "
+        f"model_id={model_id} | "
         f"bedrock_region={BEDROCK_REGION} | "
         "operation=invoke_model | "
-        "fallback_used=true"
+        f"fallback_used={str(application_fallback_used).lower()}"
     )
 
 
-def invoke_bedrock_claude(
+def invoke_bedrock_claude_with_model(
     messages: List[Dict[str, str]],
     system_prompt: str | None = None,
     max_tokens: int = 300,
     temperature: float = 0.7,
-) -> str:
+) -> tuple[str, str]:
     import boto3
 
     client = boto3.client("bedrock-runtime", region_name=BEDROCK_REGION)
@@ -52,19 +62,35 @@ def invoke_bedrock_claude(
         "system": system_prompt or PRIYA_SYSTEM_PROMPT,
         "messages": messages,
     }
-    try:
-        result = client.invoke_model(
-            modelId=MODEL_ID,
-            body=json.dumps(body),
-            contentType="application/json",
-            accept="application/json",
-        )
-        payload = json.loads(result["body"].read())
-        content = payload.get("content", [])
-        return "".join(part.get("text", "") for part in content if part.get("type") == "text").strip()
-    except Exception as exc:
-        _log_bedrock_error(exc)
-        raise
+    candidates = _model_candidates()
+    for index, model_id in enumerate(candidates):
+        try:
+            result = client.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body),
+                contentType="application/json",
+                accept="application/json",
+            )
+            payload = json.loads(result["body"].read())
+            content = payload.get("content", [])
+            text = "".join(part.get("text", "") for part in content if part.get("type") == "text").strip()
+            return text, model_id
+        except Exception as exc:
+            application_fallback_used = index == len(candidates) - 1
+            _log_bedrock_error(exc, model_id, application_fallback_used)
+            if application_fallback_used:
+                raise
+    return "", MODEL_ID
+
+
+def invoke_bedrock_claude(
+    messages: List[Dict[str, str]],
+    system_prompt: str | None = None,
+    max_tokens: int = 300,
+    temperature: float = 0.7,
+) -> str:
+    text, _model_id = invoke_bedrock_claude_with_model(messages, system_prompt, max_tokens, temperature)
+    return text
 
 
 def _safe_outreach_fallback(donor: Dict[str, Any], request: Dict[str, Any]) -> str:
@@ -96,10 +122,12 @@ def generate_outreach_message(
         "No patient PII. No medical approval. No blood safety certification. No guaranteed outcome."
     )
     try:
-        message = invoke_bedrock_claude([{"role": "user", "content": prompt}], PRIYA_SYSTEM_PROMPT, 300, 0.7)
+        message, model_used = invoke_bedrock_claude_with_model(
+            [{"role": "user", "content": prompt}], PRIYA_SYSTEM_PROMPT, 300, 0.7
+        )
         return {
             "message": message or _safe_outreach_fallback(donor, request),
-            "model": MODEL_ID,
+            "model": model_used,
             "provider": PROVIDER,
             "safetyNotice": SAFETY_NOTICE,
             "bedrock_available": bool(message),
@@ -167,11 +195,15 @@ def generate_impact_story(payload: Dict[str, Any]) -> Dict[str, Any]:
         "No patient PII, no medical approval, no blood safety certification, no guaranteed outcome."
     )
     try:
-        text = invoke_bedrock_claude([{"role": "user", "content": prompt}], PRIYA_SYSTEM_PROMPT, 600, 0.7)
+        text, model_used = invoke_bedrock_claude_with_model(
+            [{"role": "user", "content": prompt}], PRIYA_SYSTEM_PROMPT, 600, 0.7
+        )
         generated = _parse_story_json(text, fallback) if text else fallback
         return {
             **generated,
             "safetyNotice": SAFETY_NOTICE,
+            "model": model_used,
+            "provider": PROVIDER,
             "bedrock_available": bool(text),
             "fallback_used": not bool(text),
         }

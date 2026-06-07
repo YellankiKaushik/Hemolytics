@@ -41,18 +41,18 @@ export default function Layout() {
         <div className="flex min-h-screen bg-gray-50 overflow-x-hidden">
             {/* Mobile overlay */}
             {mobileOpen && (
-                <div className="fixed inset-0 bg-black/40 z-30 lg:hidden" onClick={() => setMobileOpen(false)} />
+                <div className="fixed inset-0 bg-black/40 z-30 md:hidden" onClick={() => setMobileOpen(false)} />
             )}
 
             {/* Sidebar */}
             <aside
-                className={`fixed lg:sticky top-0 left-0 h-screen z-40 flex flex-col bg-[#1a1a2e] text-white transition-all duration-300
-          w-72 max-w-[82vw] lg:max-w-none ${sidebarOpen ? 'lg:w-60' : 'lg:w-16'}
-          ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                className={`fixed md:sticky top-0 left-0 h-screen z-40 flex flex-col bg-[#1a1a2e] text-white transition-all duration-300 shadow-2xl md:shadow-none
+          w-[17rem] max-w-[84vw] md:max-w-none ${sidebarOpen ? 'md:w-[17rem]' : 'md:w-[4.75rem]'}
+          ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
             >
                 {/* Logo */}
-                <div className="flex items-center gap-2 px-4 h-14 border-b border-white/10">
+                <div className={`flex items-center gap-2 h-16 border-b border-white/10 ${showSidebarLabels ? 'px-4' : 'px-3 justify-center'}`}>
                     <div className="w-8 h-8 rounded-lg bg-[var(--brand-primary)] flex items-center justify-center flex-shrink-0">
                         <Droplets size={18} className="text-white" />
                     </div>
@@ -66,7 +66,7 @@ export default function Layout() {
                     )}
                     <button
                         onClick={() => setMobileOpen(false)}
-                        className="ml-auto lg:hidden p-2 rounded-lg text-gray-400 hover:bg-white/10 hover:text-white"
+                        className="ml-auto md:hidden p-2 rounded-lg text-gray-400 hover:bg-white/10 hover:text-white"
                         aria-label="Close navigation"
                     >
                         <X size={18} />
@@ -74,7 +74,7 @@ export default function Layout() {
                 </div>
 
                 {/* Nav */}
-                <nav className="flex-1 py-3 overflow-y-auto">
+                <nav className="flex-1 py-4 overflow-y-auto">
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const active = location.pathname === item.to;
@@ -83,7 +83,7 @@ export default function Layout() {
                                 key={item.to}
                                 to={item.to}
                                 onClick={() => setMobileOpen(false)}
-                                className={`flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-sm transition-all
+                                className={`flex items-center gap-3 min-h-11 px-4 py-2.5 mx-2 rounded-lg text-sm transition-all ${showSidebarLabels ? '' : 'justify-center px-0'}
                   ${active
                                         ? 'bg-[var(--brand-primary)] text-white shadow-lg shadow-red-900/30'
                                         : 'text-gray-400 hover:bg-white/5 hover:text-white'
@@ -101,15 +101,15 @@ export default function Layout() {
                 {showSidebarLabels && (
                     <div className="px-4 py-3 border-t border-white/10">
                         <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Backend</div>
-                        <div className="text-[11px] text-gray-400">API Gateway → Lambda → DynamoDB</div>
-                        <div className="text-[11px] text-gray-400">Bedrock Claude 3 Haiku</div>
+                        <div className="text-[11px] text-gray-400">API Gateway {">"} Lambda {">"} DynamoDB</div>
+                        <div className="text-[11px] text-gray-400">Bedrock Claude 3.5 Haiku</div>
                     </div>
                 )}
 
                 {/* Collapse toggle (desktop only) */}
                 <button
                     onClick={toggleSidebar}
-                    className="hidden lg:flex items-center justify-center h-10 border-t border-white/10 text-gray-400 hover:text-white transition"
+                    className="hidden md:flex items-center justify-center h-11 border-t border-white/10 text-gray-400 hover:text-white transition"
                 >
                     {sidebarOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
                 </button>
@@ -121,17 +121,17 @@ export default function Layout() {
                 <header className="sticky top-0 z-20 flex items-center justify-between h-14 px-4 bg-white border-b border-gray-200">
                     {/* Mobile hamburger */}
                     <button
-                        className="lg:hidden min-h-10 min-w-10 inline-flex items-center justify-center rounded-lg hover:bg-gray-100"
+                        className="md:hidden min-h-10 min-w-10 inline-flex items-center justify-center rounded-lg hover:bg-gray-100"
                         onClick={() => setMobileOpen(true)}
                         aria-label="Open navigation"
                     >
                         <Menu size={20} />
                     </button>
 
-                    <div className="lg:hidden min-w-0 flex-1 px-3">
+                    <div className="md:hidden min-w-0 flex-1 px-3">
                         <div className="text-sm font-bold text-gray-900 truncate" style={{ fontFamily: 'Space Grotesk' }}>Hemolytics</div>
                     </div>
-                    <div className="hidden lg:block flex-1" />
+                    <div className="hidden md:block flex-1" />
 
                     {/* Right side badges */}
                     <div className="flex items-center gap-2 min-w-0">
@@ -141,7 +141,7 @@ export default function Layout() {
                             <span className="text-gray-600 xs:hidden">Ready</span>
                         </div>
                         <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-xs text-blue-700 border border-blue-200">
-                            <span>Bedrock Claude 3 Haiku</span>
+                            <span>Bedrock Claude 3.5 Haiku</span>
                         </div>
                     </div>
                 </header>

@@ -8,16 +8,19 @@ Hemolytics is an AI-powered blood donation coordination platform built for Blood
 - Backend API: https://w1nxgpj5ng.execute-api.us-east-1.amazonaws.com/Prod
 - GitHub: https://github.com/YellankiKaushik/Hemolytics
 
-## Technical Documentation
+## Documentation
+
+Hemolytics is a hackathon-ready MVP. For production-scale plans, see [Future Enhancements and Production Roadmap](docs/FUTURE_ENHANCEMENTS.md).
 
 - [Technical Documentation](docs/TECHNICAL_DOCUMENTATION.md)
-- [Architecture](docs/ARCHITECTURE.md)
+- [Architecture Documentation](docs/ARCHITECTURE.md)
 - [API Documentation](docs/API_DOCUMENTATION.md)
-- [Database Documentation](docs/DATABASE_DOCUMENTATION.md)
-- [Frontend Documentation](docs/FRONTEND_DOCUMENTATION.md)
 - [Backend Documentation](docs/BACKEND_DOCUMENTATION.md)
+- [Frontend Documentation](docs/FRONTEND_DOCUMENTATION.md)
+- [Database Documentation](docs/DATABASE_DOCUMENTATION.md)
 - [Setup and Deployment](docs/SETUP_AND_DEPLOYMENT.md)
 - [Hackathon Project Summary](docs/HACKATHON_PROJECT_SUMMARY.md)
+- [Future Enhancements and Production Roadmap](docs/FUTURE_ENHANCEMENTS.md)
 
 ## Architecture
 
